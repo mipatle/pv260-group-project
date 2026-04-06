@@ -16,7 +16,7 @@ The ASP.NET Core MVC solution skeleton is located in `src/PV260.ArkFundsTracker.
 
 ### Vertical Slice structure
 - `Slices/Home/` - Home feature (controller, view model, and views)
-- `Slices/Shared/` - shared contracts/views (error model + error view)
+- `Slices/Common/` - shared contracts/views (error model + error view)
 - `Infrastructure/DependencyInjection/` - startup registration extensions
 - `Infrastructure/Configuration/` - strongly typed options
 
