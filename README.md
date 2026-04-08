@@ -1,6 +1,22 @@
 # PV260 group project
 Repository containing group project of team-1.
 
+# Git hooks
+Use the repository hooks for commit message validation, linting, and pre-push tests.
+
+```sh
+git config core.hooksPath .githooks
+```
+
+Commit subject must match:
+- `<command>(us[0-9]+): text`
+- allowed commands: `feat`, `fix`, `refactor`, `docs`, `style`, `test`, `chore`, `ci`, `build`, `perf`, `revert`
+- example: `feat(us3): add CI workflow`
+
+Pre-push hook behavior:
+- runs `dotnet test PV260.ArkFundsTracker.sln --configuration Release --nologo`
+- blocks push if tests fail
+
 # Milestone 1
 All the artifacts required for `milestone-1` are located in `doc/` folder:
 
@@ -36,4 +52,10 @@ Set runtime environment with `ASPNETCORE_ENVIRONMENT` (`Development`, `Productio
 dotnet restore .\PV260.ArkFundsTracker.sln
 dotnet build .\PV260.ArkFundsTracker.sln
 dotnet run --project .\src\PV260.ArkFundsTracker.Web\PV260.ArkFundsTracker.Web.csproj
+```
+
+```sh
+dotnet restore ./PV260.ArkFundsTracker.sln
+dotnet build ./PV260.ArkFundsTracker.sln
+dotnet run --project ./src/PV260.ArkFundsTracker.Web/PV260.ArkFundsTracker.Web.csproj
 ```
