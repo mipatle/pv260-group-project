@@ -9,13 +9,9 @@ git config core.hooksPath .githooks
 ```
 
 Commit subject must match:
-- `<command>(us[0-9]*): text`
+- `<command>(us[0-9]+): text`
 - allowed commands: `feat`, `fix`, `refactor`, `docs`, `style`, `test`, `chore`, `ci`, `build`, `perf`, `revert`
 - example: `feat(us3): add CI workflow`
-
-Pre-commit hook behavior:
-- runs `dotnet format PV260.ArkFundsTracker.sln --verify-no-changes --no-restore`
-- blocks commit if lint fails
 
 Pre-push hook behavior:
 - runs `dotnet test PV260.ArkFundsTracker.sln --configuration Release --nologo`

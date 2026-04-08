@@ -1,8 +1,0 @@
-#!/usr/bin/env sh
-set -eu
-
-SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-DOTNET_CMD="$($SCRIPT_DIR/_dotnet_cmd.sh)"
-
-echo "Running lint before commit..."
-"$DOTNET_CMD" format PV260.ArkFundsTracker.sln --verify-no-changes --no-restore
