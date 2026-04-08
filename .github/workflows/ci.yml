@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - milestone-[0-9]*
+    paths-ignore:
+      - doc/**
+      - README.md
+      - .gitignore
+      - .git/**
+  push:
+    branches:
+      - main
+      - milestone-[0-9]*
+    paths-ignore:
+      - doc/**
+      - README.md
+      - .gitignore
+      - .git/**
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+
+      - name: Restore dependencies
+        run: dotnet restore PV260.ArkFundsTracker.sln
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Lint (format and style)
+        run: dotnet tool run dotnet-format PV260.ArkFundsTracker.sln --verify-no-changes --no-restore
+
+      - name: Build solution
+        run: dotnet build PV260.ArkFundsTracker.sln --configuration Release --no-restore
+
+      - name: Run all tests (unit and e2e when present)
+        run: dotnet test PV260.ArkFundsTracker.sln --configuration Release --no-build
