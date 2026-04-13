@@ -64,7 +64,7 @@ Set runtime environment with `ASPNETCORE_ENVIRONMENT` (`Development`, `Productio
 ```powershell
 dotnet restore .\PV260.ArkFundsTracker.sln
 dotnet build .\PV260.ArkFundsTracker.sln
-dotnet ef database update --project .\src\PV260.ArkFundsTracker.Web - 
+dotnet ef database update --project .\src\PV260.ArkFundsTracker.Web
 dotnet run --project .\src\PV260.ArkFundsTracker.Web\PV260.ArkFundsTracker.Web.csproj
 ```
 
