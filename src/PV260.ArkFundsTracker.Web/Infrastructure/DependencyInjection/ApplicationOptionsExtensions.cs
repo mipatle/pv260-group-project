@@ -15,7 +15,6 @@ internal static class ApplicationOptionsExtensions
             .Validate(options => !string.IsNullOrWhiteSpace(options.Name),
                 $"{ApplicationOptions.SectionName}:{nameof(ApplicationOptions.Name)} must be configured.")
             .ValidateOnStart();
-        
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("Default")));
 

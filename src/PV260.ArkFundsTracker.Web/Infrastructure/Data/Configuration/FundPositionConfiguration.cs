@@ -8,10 +8,8 @@ public class FundPositionConfiguration : IEntityTypeConfiguration<FundPosition>
 {
     public void Configure(EntityTypeBuilder<FundPosition> builder)
     {
-        builder.ToTable("fund_positions", t =>
-        {
-            t.HasCheckConstraint("ck_fund_positions_fund", "\"Fund\" = 'ARKK'");
-        });
+        builder.ToTable("fund_positions",
+            t => { t.HasCheckConstraint("ck_fund_positions_fund", "\"Fund\" = 'ARKK'"); });
         builder.HasKey(x => new {x.Date, x.Ticker});
         builder.Property(x => x.Fund).HasDefaultValue("ARKK");
         builder.Property(x => x.Shares).HasColumnType("numeric");
