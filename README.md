@@ -30,11 +30,24 @@ All the artifacts required for `milestone-1` are located in `doc/` folder:
 ## US3 Project Setup & MVC Infrastructure
 The ASP.NET Core MVC solution skeleton is located in `src/PV260.ArkFundsTracker.Web`.
 
+## US4 Database Schema & PostgreSQL Configuration
+Project uses PostgreSQL database.
+Project uses .NET User Secrets to store sensitive configuration for database connection strings.
+
+### Set DB secrets
+```
+dotnet user-secrets init - if not setup yet
+dotnet user-secrets set "ConnectionStrings:Default" "Host=localhost;Port=5432;Database=arkfundsDB;Username=postgres;Password=*your_password*"
+```
+
 ### Vertical Slice structure
 - `Slices/Home/` - Home feature (controller, view model, and views)
 - `Slices/Common/` - shared contracts/views (error model + error view)
+- `Slices/FundPosition/` - FundPosition (entity model)
 - `Infrastructure/DependencyInjection/` - startup registration extensions
 - `Infrastructure/Configuration/` - strongly typed options
+- `Infrastructure/Data/` - Database connection (DB context, entities configuration)
+- `Migrations/` - Migrations for database 
 
 ### Environment configuration
 Configuration files:
@@ -51,11 +64,13 @@ Set runtime environment with `ASPNETCORE_ENVIRONMENT` (`Development`, `Productio
 ```powershell
 dotnet restore .\PV260.ArkFundsTracker.sln
 dotnet build .\PV260.ArkFundsTracker.sln
+dotnet ef database update --project .\src\PV260.ArkFundsTracker.Web
 dotnet run --project .\src\PV260.ArkFundsTracker.Web\PV260.ArkFundsTracker.Web.csproj
 ```
 
 ```sh
 dotnet restore ./PV260.ArkFundsTracker.sln
 dotnet build ./PV260.ArkFundsTracker.sln
+dotnet ef database update --project ./src/PV260.ArkFundsTracker.Web
 dotnet run --project ./src/PV260.ArkFundsTracker.Web/PV260.ArkFundsTracker.Web.csproj
 ```

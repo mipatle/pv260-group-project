@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +26,11 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
+    // Auto migration
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+
     app.UseExceptionHandler(errorPath);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();

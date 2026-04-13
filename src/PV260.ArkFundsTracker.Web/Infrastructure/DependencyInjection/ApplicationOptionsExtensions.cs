@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using PV260.ArkFundsTracker.Web.Infrastructure.Configuration;
+using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 
 namespace PV260.ArkFundsTracker.Web.Infrastructure.DependencyInjection;
 
@@ -13,6 +15,8 @@ internal static class ApplicationOptionsExtensions
             .Validate(options => !string.IsNullOrWhiteSpace(options.Name),
                 $"{ApplicationOptions.SectionName}:{nameof(ApplicationOptions.Name)} must be configured.")
             .ValidateOnStart();
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("Default")));
 
         return services;
     }
