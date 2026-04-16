@@ -26,8 +26,8 @@ public class FundPositionsService
     {
         return await _db.FundPositions.Where(f => f.Date == date).ToListAsync();
     }
-    
-    public async Task<List<FundPosition>> FetchAndSaveLatest()
+
+    public async Task<List<FundPosition>> FetchAndSaveLatest(int? adminId = null)
     {
         var positionsData = await FetchLatestPositions();
         var positions = ParseArkCsv(positionsData);
@@ -42,11 +42,11 @@ public class FundPositionsService
             throw new DataNotLatestException(positions.First().Date, DateOnly.FromDateTime(DateTime.Today));
         }
 
-        var latestPositions = await SetDailyPositions(positions);
+        var latestPositions = await SetDailyPositions(positions, adminId);
         return latestPositions;
     }
 
-    public async Task<List<FundPosition>> SetDailyPositions(List<FundPosition> positions)
+    public async Task<List<FundPosition>> SetDailyPositions(List<FundPosition> positions, int? adminId = null)
     {
         if (positions.Count == 0)
         {
@@ -71,6 +71,7 @@ public class FundPositionsService
         foreach (var position in positions)
         {
             position.Id = Guid.NewGuid();
+            position.AdminId = adminId;
         }
         
         await _db.FundPositions.AddRangeAsync(positions);
