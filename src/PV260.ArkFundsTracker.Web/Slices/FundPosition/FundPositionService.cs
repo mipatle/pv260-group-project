@@ -13,7 +13,7 @@ public class FundPositionsService
     private readonly AppDbContext _db;
     private readonly HttpClient _http;
     private readonly ILogger<FundPositionsService> _logger;
-    private const string ArkUrl = "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
+    private const string ArkUrl = "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
 
     public FundPositionsService(AppDbContext db, HttpClient http, ILogger<FundPositionsService> logger)
     {
@@ -88,8 +88,7 @@ public class FundPositionsService
         
         try
         {
-            csvData = await client.GetStringAsync(
-                "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv");
+            csvData = await client.GetStringAsync(ArkUrl);
         }
         catch (HttpRequestException e)
         {
