@@ -19,4 +19,22 @@ public static partial class Log
         Level = LogLevel.Error, 
         Message = "Error at fetching the CSV. {ErrorMessage}")]
     public static partial void HttpFetchingError(ILogger logger, string errorMessage="");
+    
+    [LoggerMessage(
+        EventId = 1004, 
+        Level = LogLevel.Information, 
+        Message = "Starting the CronJob for date {Date} - fetching the data.")]
+    public static partial void CronJobStart(ILogger logger, DateOnly date);
+    
+    [LoggerMessage(
+        EventId = 1005, 
+        Level = LogLevel.Information, 
+        Message = "CronJob for date {Date} finished succesfully.")]
+    public static partial void CronJobFinished(ILogger logger, DateOnly date);
+    
+    [LoggerMessage(
+        EventId = 1006, 
+        Level = LogLevel.Error, 
+        Message = "CronJob for date {Date} failed. Reason: {ErrorMessage}")]
+    public static partial void CronJobFailed(ILogger logger, DateOnly date, string errorMessage="");
 }
