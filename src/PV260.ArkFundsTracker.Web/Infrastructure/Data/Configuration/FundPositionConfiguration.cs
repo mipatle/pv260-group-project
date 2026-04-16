@@ -10,7 +10,7 @@ public class FundPositionConfiguration : IEntityTypeConfiguration<FundPosition>
     {
         builder.ToTable("fund_positions",
             t => { t.HasCheckConstraint("ck_fund_positions_fund", "\"Fund\" = 'ARKK'"); });
-        builder.HasKey(x => new {x.Date, x.Ticker});
+        builder.HasKey(x => x.Id);
         builder.Property(x => x.Fund).HasDefaultValue("ARKK");
         builder.Property(x => x.Shares).HasColumnType("numeric");
         builder.Property(x => x.MarketValue).HasColumnType("numeric");

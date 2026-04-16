@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
@@ -11,9 +12,11 @@ using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 namespace PV260.ArkFundsTracker.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260415195151_AddDeletedAt")]
+    partial class AddDeletedAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,9 +27,12 @@ namespace PV260.ArkFundsTracker.Web.Migrations
 
             modelBuilder.Entity("PV260.ArkFundsTracker.Web.Slices.FundPosition.FundPosition", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Ticker")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<int?>("AdminId")
                         .HasColumnType("integer");
@@ -38,9 +44,6 @@ namespace PV260.ArkFundsTracker.Web.Migrations
                     b.Property<string>("Cusip")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -57,15 +60,10 @@ namespace PV260.ArkFundsTracker.Web.Migrations
                     b.Property<decimal>("Shares")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("Ticker")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
                     b.Property<decimal>("WeightPercentage")
                         .HasColumnType("numeric");
 
-                    b.HasKey("Id");
+                    b.HasKey("Date", "Ticker");
 
                     b.HasIndex("Ticker")
                         .HasDatabaseName("idx_fund_positions_ticker");

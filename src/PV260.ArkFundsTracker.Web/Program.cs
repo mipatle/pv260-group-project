@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Infrastructure.DependencyInjection;
+using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
 var builder = WebApplication.CreateBuilder(args);
 const string errorPath = "/home/error";
@@ -15,18 +16,21 @@ if (builder.Environment.IsDevelopment())
 // Add services to the container.
 builder.Services
     .AddWebPresentation()
-    .AddApplicationOptions(builder.Configuration);
+    .AddApplicationOptions(builder.Configuration)
+    .AddScoped<FundPositionsService>()
+    .AddHttpClient();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-}
-else
-{
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseDeveloperExceptionPage();
+// }
+// else
+
     // Auto migration
+{
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
@@ -35,6 +39,7 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 app.UseRouting();
