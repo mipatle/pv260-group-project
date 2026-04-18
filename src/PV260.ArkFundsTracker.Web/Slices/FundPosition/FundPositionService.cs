@@ -8,25 +8,16 @@ using PV260.ArkFundsTracker.Web.Infrastructure.Logging;
 
 namespace PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
-public class FundPositionsService
+public class FundPositionsService(AppDbContext db, HttpClient http, ILogger<FundPositionsService> logger)
 {
-    private readonly AppDbContext _db;
-    private readonly HttpClient _http;
-    private readonly ILogger<FundPositionsService> _logger;
+    private readonly HttpClient _http = http;
 
     private const string ArkUrl =
         "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
 
-    public FundPositionsService(AppDbContext db, HttpClient http, ILogger<FundPositionsService> logger)
-    {
-        _db = db;
-        _http = http;
-        _logger = logger;
-    }
-
     public async Task<List<FundPosition>> GetHistory(DateOnly date)
     {
-        return await _db.FundPositions.Where(f => f.Date == date).ToListAsync();
+        return await db.FundPositions.Where(f => f.Date == date).ToListAsync();
     }
 
     public async Task<List<FundPosition>> FetchAndSaveLatest(int? adminId = null)
@@ -61,7 +52,7 @@ public class FundPositionsService
             throw new DataInconsistentException("Positions must all have the same date.");
         }
 
-        var oldPositions = await _db.FundPositions
+        var oldPositions = await db.FundPositions
             .Where(position => position.Date == firstPosition.Date)
             .ToListAsync();
 
@@ -76,9 +67,9 @@ public class FundPositionsService
             position.AdminId = adminId;
         }
 
-        await _db.FundPositions.AddRangeAsync(positions);
+        await db.FundPositions.AddRangeAsync(positions);
 
-        await _db.SaveChangesAsync();
+        await db.SaveChangesAsync();
 
         return positions;
     }
@@ -96,7 +87,7 @@ public class FundPositionsService
         }
         catch (HttpRequestException e)
         {
-            Log.HttpFetchingError(_logger, e.Message);
+            Log.HttpFetchingError(logger, e.Message);
             throw new DataUnavailableException(e.Message);
         }
 
@@ -132,11 +123,11 @@ public class FundPositionsService
 
             if (rowNumber != null && rawRecord != null)
             {
-                Log.RowParsingError(_logger, (int)rowNumber, rawRecord, ex.Message);
+                Log.RowParsingError(logger, (int)rowNumber, rawRecord, ex.Message);
             }
             else
             {
-                Log.CsvParsingError(_logger, ex.Message);
+                Log.CsvParsingError(logger, ex.Message);
             }
 
             throw new DataInconsistentException(ex.Message);
