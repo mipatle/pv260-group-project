@@ -29,7 +29,7 @@ public static partial class Log
     [LoggerMessage(
         EventId = 1005,
         Level = LogLevel.Information,
-        Message = "CronJob for date {Date} finished succesfully.")]
+        Message = "CronJob for date {Date} finished successfully.")]
     public static partial void CronJobFinished(ILogger logger, DateOnly date);
 
     [LoggerMessage(

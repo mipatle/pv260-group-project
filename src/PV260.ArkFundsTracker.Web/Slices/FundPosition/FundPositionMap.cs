@@ -22,9 +22,9 @@ public sealed class FundPositionMap : ClassMap<FundPosition>
             .Convert(args =>
             {
                 var rawValue = args.Row.GetField("weight (%)")?.Replace("%", "").Trim();
-                var parseSuccesful = decimal.TryParse(rawValue, NumberStyles.Any, CultureInfo.InvariantCulture,
+                var parseSuccessful = decimal.TryParse(rawValue, NumberStyles.Any, CultureInfo.InvariantCulture,
                     out var result);
-                return parseSuccesful ? result : 0m;
+                return parseSuccessful ? result : 0m;
             });
 
         Map(m => m.Id).Ignore();
