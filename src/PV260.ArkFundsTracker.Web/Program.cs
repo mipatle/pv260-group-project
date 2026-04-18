@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using PV260.ArkFundsTracker.Web.Infrastructure.Configuration;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Infrastructure.DependencyInjection;
 using PV260.ArkFundsTracker.Web.Slices.CronFetching;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
+DotEnvLoader.LoadIfPresent();
 var builder = WebApplication.CreateBuilder(args);
 const string errorPath = "/home/error";
 
