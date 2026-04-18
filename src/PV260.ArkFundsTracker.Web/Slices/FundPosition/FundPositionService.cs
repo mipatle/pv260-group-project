@@ -13,7 +13,9 @@ public class FundPositionsService
     private readonly AppDbContext _db;
     private readonly HttpClient _http;
     private readonly ILogger<FundPositionsService> _logger;
-    private const string ArkUrl = "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
+
+    private const string ArkUrl =
+        "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
 
     public FundPositionsService(AppDbContext db, HttpClient http, ILogger<FundPositionsService> logger)
     {
@@ -21,7 +23,7 @@ public class FundPositionsService
         _http = http;
         _logger = logger;
     }
-    
+
     public async Task<List<FundPosition>> GetHistory(DateOnly date)
     {
         return await _db.FundPositions.Where(f => f.Date == date).ToListAsync();
@@ -58,7 +60,7 @@ public class FundPositionsService
         {
             throw new DataInconsistentException("Positions must all have the same date.");
         }
-        
+
         var oldPositions = await _db.FundPositions
             .Where(position => position.Date == firstPosition.Date)
             .ToListAsync();
@@ -73,11 +75,11 @@ public class FundPositionsService
             position.Id = Guid.NewGuid();
             position.AdminId = adminId;
         }
-        
+
         await _db.FundPositions.AddRangeAsync(positions);
-        
+
         await _db.SaveChangesAsync();
-        
+
         return positions;
     }
 
@@ -85,8 +87,9 @@ public class FundPositionsService
     {
         string csvData;
         using var client = new HttpClient();
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-        
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+
         try
         {
             csvData = await client.GetStringAsync(ArkUrl);
@@ -99,7 +102,7 @@ public class FundPositionsService
 
         return csvData;
     }
-    
+
     private List<FundPosition> ParseArkCsv(string csvContent)
     {
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -107,17 +110,18 @@ public class FundPositionsService
             PrepareHeaderForMatch = args => args.Header.ToLower(CultureInfo.InvariantCulture),
             HasHeaderRecord = true,
             BadDataFound = null,
-            ShouldSkipRecord = args => {
+            ShouldSkipRecord = args =>
+            {
                 var firstField = args.Row.GetField(0);
                 return string.IsNullOrWhiteSpace(firstField) || firstField.Contains("Investors should");
             }
         };
-        
+
         using var reader = new StringReader(csvContent);
         using var csv = new CsvReader(reader, config);
         csv.Context.RegisterClassMap<FundPositionMap>();
-        
-        try 
+
+        try
         {
             return csv.GetRecords<FundPosition>().ToList();
         }
@@ -134,8 +138,8 @@ public class FundPositionsService
             {
                 Log.CsvParsingError(_logger, ex.Message);
             }
-            
-            throw new DataInconsistentException(ex.Message); 
+
+            throw new DataInconsistentException(ex.Message);
         }
     }
 }
