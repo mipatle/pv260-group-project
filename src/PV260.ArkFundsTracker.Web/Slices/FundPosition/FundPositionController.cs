@@ -2,20 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
-public class FundPositionController : Controller
+public class FundPositionController(FundPositionsService service) : Controller
 {
-    private readonly FundPositionsService _service;
-
-    public FundPositionController(FundPositionsService service)
-    {
-        _service = service;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Index(DateOnly? date)
     {
         var targetDate = date ?? DateOnly.FromDateTime(DateTime.Today);
-        var positions = await _service.GetHistory(targetDate);
+        var positions = await service.GetHistory(targetDate, HttpContext.RequestAborted);
 
         var viewModel = new FundHoldingsViewModel
         {
@@ -32,8 +25,12 @@ public class FundPositionController : Controller
     {
         try
         {
-            await _service.FetchAndSaveLatest();
+            await service.FetchAndSaveLatest(ct: HttpContext.RequestAborted);
             TempData["IsFetched"] = true;
+        }
+        catch (OperationCanceledException)
+        {
+            return RedirectToAction(nameof(Index));
         }
         catch (DataInconsistentException ex)
         {
