@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Infrastructure.DependencyInjection;
+using PV260.ArkFundsTracker.Web.Slices.CronFetching;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,8 @@ builder.Services
     .AddWebPresentation()
     .AddApplicationOptions(builder.Configuration)
     .AddScoped<FundPositionsService>()
-    .AddHttpClient();
+    .AddHttpClient()
+    .AddHostedService<CronJob>();
 
 var app = builder.Build();
 
