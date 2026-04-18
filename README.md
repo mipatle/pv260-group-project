@@ -35,17 +35,20 @@ Project uses PostgreSQL database.
 Connection string key used by the app is `ConnectionStrings:Default`.
 
 ### Configuration model
-- `appsettings*.json` stores `ConnectionStrings:Default` as a template with `${POSTGRES_*}` placeholders.
-- Placeholders are resolved at startup from environment variables.
-- If any required `POSTGRES_*` variable is missing, app startup fails fast with a clear error.
+- `appsettings.json` and `appsettings.Production.json` keep `ConnectionStrings:Default` empty by default.
+- `appsettings.Development.json` contains the local development connection string.
+- Docker Compose uses `.env` for container startup values and sets `ConnectionStrings__Default` for the web container.
 
-### Set DB secrets (optional, local `dotnet run` only)
-```
-dotnet user-secrets init - if not setup yet
-dotnet user-secrets set "ConnectionStrings:Default" "Host=localhost;Port=5432;Database=arkfundsDB;Username=postgres;Password=*your_password*"
+### Development connection string
+`src/PV260.ArkFundsTracker.Web/appsettings.Development.json` currently uses:
+
+```json
+"ConnectionStrings": {
+  "Default": "Host=localhost;Port=5434;Database=arkfundsDB;Username=postgres;Password=password123"
+}
 ```
 
-Use this only when you run the app outside Docker and do not want to export `POSTGRES_*` variables manually.
+If needed, you can still override this value using `ConnectionStrings__Default` environment variable or `dotnet user-secrets`.
 
 ### Configure environment variables via .env
 Use the sample file and create your local `.env`:
@@ -56,13 +59,12 @@ Copy-Item .env.example .env
 
 `.env` is used by Docker Compose to configure:
 - PostgreSQL credentials and port
-- `POSTGRES_*` variables used by `ConnectionStrings:Default` placeholders in appsettings
 - `APP_ENVIRONMENT` to switch between `Development` and `Production`
 
 Default PostgreSQL image is pinned to `postgres:17` via `POSTGRES_IMAGE` to avoid `postgres:latest` major-upgrade surprises during local development.
 
-`dotnet run` startup now loads the nearest `.env` file automatically (searching current directory and parent directories).
-Already-set environment variables still win over values from `.env`.
+`dotnet run` uses the connection string from `appsettings.Development.json` by default.
+For Docker Compose, the web container uses the `db` service name internally and sets `ConnectionStrings__Default` itself.
 
 ### Vertical Slice structure
 - `Slices/Home/` - Home feature (controller, view model, and views)
@@ -82,7 +84,7 @@ Configuration files:
 `Application` options can be overridden by environment variables, e.g.:
 - `Application__Name`
 
-Database variables expected by current setup:
+Database variables expected for Docker Compose setup:
 - `POSTGRES_HOST`
 - `POSTGRES_PORT`
 - `POSTGRES_DB`
@@ -93,9 +95,8 @@ Set runtime environment with `ASPNETCORE_ENVIRONMENT` (`Development`, `Productio
 
 ### Run locally
 Local non-Docker options:
-- Create `.env` from `.env.example` (recommended), or
-- set `POSTGRES_*` in your shell/IDE environment, or
-- set `ConnectionStrings:Default` via `dotnet user-secrets`.
+- Use `ConnectionStrings:Default` from `appsettings.Development.json` (default), or
+- override with `ConnectionStrings__Default` in your shell/IDE environment.
 
 ```powershell
 dotnet restore .\PV260.ArkFundsTracker.sln
