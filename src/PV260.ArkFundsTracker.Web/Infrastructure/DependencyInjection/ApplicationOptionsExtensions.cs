@@ -10,13 +10,21 @@ internal static class ApplicationOptionsExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        var defaultConnection = configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(defaultConnection))
+        {
+            throw new InvalidOperationException(
+                "ConnectionStrings:Default must be configured. For local host-run, set it in appsettings.Development.json " +
+                "or user-secrets. For Docker Compose, ensure the web service sets ConnectionStrings__Default.");
+        }
+
         services.AddOptions<ApplicationOptions>()
             .Bind(configuration.GetSection(ApplicationOptions.SectionName))
             .Validate(options => !string.IsNullOrWhiteSpace(options.Name),
                 $"{ApplicationOptions.SectionName}:{nameof(ApplicationOptions.Name)} must be configured.")
             .ValidateOnStart();
         services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("Default")));
+            options.UseNpgsql(defaultConnection));
 
         return services;
     }

@@ -6,10 +6,10 @@ public class FundPosition
 {
     public Guid Id { get; set; }
     public DateOnly Date { get; set; }
-    
+
     [MaxLength(10)]
     public string Ticker { get; set; } = string.Empty;
-    
+
     public string Fund { get; set; } = "ARKK";
     public string Company { get; set; } = string.Empty;
     public string Cusip { get; set; } = string.Empty;

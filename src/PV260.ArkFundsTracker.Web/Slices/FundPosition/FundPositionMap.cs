@@ -8,7 +8,7 @@ public sealed class FundPositionMap : ClassMap<FundPosition>
     public FundPositionMap()
     {
         AutoMap(CultureInfo.InvariantCulture);
-        
+
         Map(m => m.Date).Name("date");
         Map(m => m.Fund).Name("fund");
         Map(m => m.Company).Name("company");
@@ -19,11 +19,12 @@ public sealed class FundPositionMap : ClassMap<FundPosition>
             .TypeConverterOption.NumberStyles(NumberStyles.Currency)
             .TypeConverterOption.CultureInfo(CultureInfo.GetCultureInfo("en-US"));
         Map(m => m.WeightPercentage).Name("weight (%)")
-            .Convert(args => 
+            .Convert(args =>
             {
                 var rawValue = args.Row.GetField("weight (%)")?.Replace("%", "").Trim();
-                var parseSuccesful = decimal.TryParse(rawValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var result);
-                return parseSuccesful ? result : 0m;
+                var parseSuccessful = decimal.TryParse(rawValue, NumberStyles.Any, CultureInfo.InvariantCulture,
+                    out var result);
+                return parseSuccessful ? result : 0m;
             });
 
         Map(m => m.Id).Ignore();

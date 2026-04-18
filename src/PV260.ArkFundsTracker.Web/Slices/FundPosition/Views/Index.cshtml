@@ -19,7 +19,8 @@
 
     <form asp-action="Index" method="get" class="d-inline ms-3">
         <div class="input-group">
-            <input type="date" name="date" class="form-control" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" required />
+            <input type="date" name="date" class="form-control" value="@Model.SelectedDate.ToString("yyyy-MM-dd")"
+                   required/>
             <button type="submit" class="btn btn-secondary">Get Historical Data</button>
         </div>
     </form>
@@ -28,7 +29,9 @@
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger d-flex align-items-center" role="alert">
-        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+            <use xlink:href="#exclamation-triangle-fill"/>
+        </svg>
         <div>
             @TempData["ErrorMessage"]
         </div>
@@ -51,7 +54,7 @@ else
         </tr>
         </thead>
         <tbody>
-        @foreach (var pos in Model.Positions.OrderByDescending(p => p.WeightPercentage)) 
+        @foreach (var pos in Model.Positions.OrderByDescending(p => p.WeightPercentage))
         {
             <tr>
                 <td><strong>@pos.Ticker</strong></td>
