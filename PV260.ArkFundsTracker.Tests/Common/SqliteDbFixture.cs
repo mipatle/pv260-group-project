@@ -6,8 +6,8 @@ namespace PV260.ArkFundsTracker.Tests.Common;
 
 public class SqliteDbFixture : IAsyncLifetime
 {
-    private SqliteConnection? Connection { get; set; }
-    public AppDbContext? Context { get; private set; }
+    private SqliteConnection Connection { get; set; } = null!;
+    public AppDbContext Context { get; private set; } = null!;
     
     
     public async Task InitializeAsync()
@@ -26,22 +26,12 @@ public class SqliteDbFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        if (Context == null || Connection == null)
-        {
-            return;
-        }
-        
-        await Context!.DisposeAsync();
-        await Connection!.DisposeAsync();
+        await Context.DisposeAsync();
+        await Connection.DisposeAsync();
     }
     
     public async Task ResetAsync()
     {
-        if (Context == null)
-        {
-            return;
-        }
-        
         Context.FundPositions.RemoveRange(Context.FundPositions);
         await Context.SaveChangesAsync();
     }

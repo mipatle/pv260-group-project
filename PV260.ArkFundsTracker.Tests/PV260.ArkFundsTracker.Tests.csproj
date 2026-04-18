@@ -16,6 +16,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="TestData\*.csv">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
         <Using Include="Xunit"/>
     </ItemGroup>
 
