@@ -31,7 +31,7 @@ var app = builder.Build();
 // }
 // else
 
-    // Auto migration
+// Auto migration
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

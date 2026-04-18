@@ -4,18 +4,9 @@ using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
 namespace PV260.ArkFundsTracker.Web.Slices.CronFetching;
 
-public class CronJob : BackgroundService
+public class CronJob(IServiceProvider services, ILogger<CronJob> logger) : BackgroundService
 {
-    private readonly IServiceProvider _services;
-    private readonly ILogger<CronJob> _logger;
-    private const string Expression = "0 59 23 * * 7";
-    private const int AdminId = 42;  // Temporary Id until the auth gets implemented.
-
-    public CronJob(IServiceProvider services, ILogger<CronJob> logger)
-    {
-        _services = services;
-        _logger = logger;
-    }
+    private const string Expression = "32 59 23 * * 7";
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -35,28 +26,28 @@ public class CronJob : BackgroundService
 
                 await DoWork(stoppingToken);
             }
-            
+
             await Task.Delay(1000, stoppingToken);
         }
     }
 
     private async Task DoWork(CancellationToken ct)
     {
-        using var scope = _services.CreateScope();
+        using var scope = services.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<FundPositionsService>();
         var today = DateOnly.FromDateTime(DateTime.Today);
-        
-        try 
+
+        try
         {
             ct.ThrowIfCancellationRequested();
-            
-            Log.CronJobStart(_logger, today);
-            await service.FetchAndSaveLatest(AdminId); 
-            Log.CronJobFinished(_logger, today);
+
+            Log.CronJobStart(logger, today);
+            await service.FetchAndSaveLatest();
+            Log.CronJobFinished(logger, today);
         }
         catch (Exception ex)
         {
-            Log.CronJobFailed(_logger, today, ex.Message);
+            Log.CronJobFailed(logger, today, ex.Message);
         }
     }
 }

@@ -6,7 +6,10 @@ public class FundPositionController : Controller
 {
     private readonly FundPositionsService _service;
 
-    public FundPositionController(FundPositionsService service) => _service = service;
+    public FundPositionController(FundPositionsService service)
+    {
+        _service = service;
+    }
 
     [HttpGet]
     public async Task<IActionResult> Index(DateOnly? date)
@@ -48,7 +51,7 @@ public class FundPositionController : Controller
         {
             TempData["ErrorMessage"] = "Unexpected exception happened: " + ex.Message;
         }
-        
+
         return RedirectToAction(nameof(Index));
     }
 }

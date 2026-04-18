@@ -5,4 +5,4 @@ public class DataNotLatestException(DateOnly received, DateOnly expected)
 
 public class DataInconsistentException(string message) : Exception(message);
 
-public class DataUnavailableException(string message): Exception(message);
+public class DataUnavailableException(string message) : Exception(message);
