@@ -36,7 +36,7 @@ Connection string key used by the app is `ConnectionStrings:Default`.
 
 ### Configuration model
 - `appsettings.json` and `appsettings.Production.json` keep `ConnectionStrings:Default` empty by default.
-- `appsettings.Development.json` contains the local development connection string.
+- `appsettings.Development.json` contains the local host-run development connection string.
 - Docker Compose uses `.env` for container startup values and sets `ConnectionStrings__Default` for the web container.
 
 ### Development connection string
@@ -60,6 +60,9 @@ Copy-Item .env.example .env
 `.env` is used by Docker Compose to configure:
 - PostgreSQL credentials and port
 - `APP_ENVIRONMENT` to switch between `Development` and `Production`
+
+`.env` values are for Compose-run containers. Local host-run (`dotnet run`) uses `appsettings.Development.json`
+or optional user-secrets overrides.
 
 Default PostgreSQL image is pinned to `postgres:17` via `POSTGRES_IMAGE` to avoid `postgres:latest` major-upgrade surprises during local development.
 
@@ -85,7 +88,6 @@ Configuration files:
 - `Application__Name`
 
 Database variables expected for Docker Compose setup:
-- `POSTGRES_HOST`
 - `POSTGRES_PORT`
 - `POSTGRES_DB`
 - `POSTGRES_USER`
@@ -97,6 +99,14 @@ Set runtime environment with `ASPNETCORE_ENVIRONMENT` (`Development`, `Productio
 Local non-Docker options:
 - Use `ConnectionStrings:Default` from `appsettings.Development.json` (default), or
 - override with `ConnectionStrings__Default` in your shell/IDE environment.
+
+Current local default connection string:
+
+```json
+"ConnectionStrings": {
+  "Default": "Host=localhost;Port=5434;Database=arkfundsDB;Username=postgres;Password=password123"
+}
+```
 
 ```powershell
 dotnet restore .\PV260.ArkFundsTracker.sln
@@ -119,6 +129,8 @@ Start app + database in Development mode (`docker-compose.yml`):
 Copy-Item .env.example .env
 docker compose up --build
 ```
+
+Compose-run web app connects to PostgreSQL using `Host=db;Port=5432` inside the Docker network.
 
 Run in Production mode (same compose file, env-controlled):
 

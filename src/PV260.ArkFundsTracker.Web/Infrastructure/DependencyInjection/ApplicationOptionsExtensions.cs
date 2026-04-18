@@ -13,7 +13,9 @@ internal static class ApplicationOptionsExtensions
         var defaultConnection = configuration.GetConnectionString("Default");
         if (string.IsNullOrWhiteSpace(defaultConnection))
         {
-            throw new InvalidOperationException("ConnectionStrings:Default must be configured.");
+            throw new InvalidOperationException(
+                "ConnectionStrings:Default must be configured. For local host-run, set it in appsettings.Development.json " +
+                "or user-secrets. For Docker Compose, ensure the web service sets ConnectionStrings__Default.");
         }
 
         services.AddOptions<ApplicationOptions>()
