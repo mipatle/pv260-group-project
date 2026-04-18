@@ -8,7 +8,7 @@ public class CronJob : BackgroundService
 {
     private readonly IServiceProvider _services;
     private readonly ILogger<CronJob> _logger;
-    private const string Expression = "32 59 23 * * *";
+    private const string Expression = "0 59 23 * * 7";
     private const int AdminId = 42;  // Temporary Id until the auth gets implemented.
 
     public CronJob(IServiceProvider services, ILogger<CronJob> logger)
@@ -35,6 +35,8 @@ public class CronJob : BackgroundService
 
                 await DoWork(stoppingToken);
             }
+            
+            await Task.Delay(1000, stoppingToken);
         }
     }
 
