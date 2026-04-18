@@ -42,8 +42,12 @@ public class CronJob(IServiceProvider services, ILogger<CronJob> logger) : Backg
             ct.ThrowIfCancellationRequested();
 
             Log.CronJobStart(logger, today);
-            await service.FetchAndSaveLatest();
+            await service.FetchAndSaveLatest(ct: ct);
             Log.CronJobFinished(logger, today);
+        }
+        catch (OperationCanceledException)
+        {
+            // Graceful shutdown or cancellation should not be treated as a failed cron run.
         }
         catch (Exception ex)
         {
