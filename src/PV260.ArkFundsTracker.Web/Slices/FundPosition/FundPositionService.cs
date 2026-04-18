@@ -10,8 +10,6 @@ namespace PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
 public class FundPositionsService(AppDbContext db, HttpClient http, ILogger<FundPositionsService> logger)
 {
-    private readonly HttpClient _http = http;
-
     private const string ArkUrl =
         "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
 
@@ -77,13 +75,15 @@ public class FundPositionsService(AppDbContext db, HttpClient http, ILogger<Fund
     private async Task<string> FetchLatestPositions()
     {
         string csvData;
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+        if (http.DefaultRequestHeaders.UserAgent.Count == 0)
+        {
+            http.DefaultRequestHeaders.UserAgent.ParseAdd(
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        }
 
         try
         {
-            csvData = await client.GetStringAsync(ArkUrl);
+            csvData = await http.GetStringAsync(ArkUrl);
         }
         catch (HttpRequestException e)
         {
