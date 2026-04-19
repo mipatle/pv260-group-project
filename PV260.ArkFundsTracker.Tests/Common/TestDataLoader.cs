@@ -6,12 +6,7 @@ public static class TestDataLoader
     {
         var path = Path.Combine(AppContext.BaseDirectory, "TestData", fileName);
 
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException($"Test data file not found: {path}");    
-        }
-
-        return File.ReadAllText(path);
+        return !File.Exists(path) ? throw new FileNotFoundException($"Test data file not found: {path}") : File.ReadAllText(path);
     }
 
     ///<summary>

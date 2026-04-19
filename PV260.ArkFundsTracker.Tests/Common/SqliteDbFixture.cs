@@ -8,8 +8,7 @@ public class SqliteDbFixture : IAsyncLifetime
 {
     private SqliteConnection Connection { get; set; } = null!;
     public AppDbContext Context { get; private set; } = null!;
-    
-    
+
     public async Task InitializeAsync()
     {
         Connection = new SqliteConnection("Data Source=:memory:");
@@ -29,7 +28,7 @@ public class SqliteDbFixture : IAsyncLifetime
         await Context.DisposeAsync();
         await Connection.DisposeAsync();
     }
-    
+
     public async Task ResetAsync()
     {
         Context.FundPositions.RemoveRange(Context.FundPositions);

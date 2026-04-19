@@ -3,10 +3,10 @@ using PV260.ArkFundsTracker.Tests.Common;
 
 namespace PV260.ArkFundsTracker.Tests.IngestionLogicTests;
 
-public class IngestionLogicTests (SqliteDbFixture db) : IClassFixture<SqliteDbFixture>
+public class IngestionLogicTests(SqliteDbFixture db) : IClassFixture<SqliteDbFixture>
 {
     private const string CsvName = "valid_today.csv";
-    
+
     [Fact]
     public async Task Cron_Save_SetsAdminId_ToNull()
     {
