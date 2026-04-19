@@ -1,3 +1,3 @@
-date,fund,ticker,company,cusip,shares,market value ($),weight (%)
-{{TODAY}},ARKK,TSLA,Tesla Inc,88160R101,1000,1000000,10.5
-{{TODAY}},ARKK,COIN,Coinbase Global Inc,19260Q107,500,500000,5.25
+date,fund,company,ticker,cusip,shares,market value ($),weight (%)
+{{TODAY}},ARKK,TESLA INC,TSLA,88160R101,"1,733,748","$674,254,597.20",9.71%
+{{TODAY}},ARKK,TEMPUS AI INC-CL A,TEM,88023B103,"6,560,909","$357,044,667.80",5.14%
