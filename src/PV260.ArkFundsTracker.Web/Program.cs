@@ -3,6 +3,7 @@ using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Infrastructure.DependencyInjection;
 using PV260.ArkFundsTracker.Web.Slices.CronFetching;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition;
+using PV260.ArkFundsTracker.Web.Slices.FundPosition.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 const string errorPath = "/home/error";
@@ -19,6 +20,7 @@ builder.Services
     .AddWebPresentation()
     .AddApplicationOptions(builder.Configuration)
     .AddScoped<FundPositionsService>()
+    .AddScoped<IFundPositionValidator, FundPositionValidator>()
     .AddHttpClient()
     .AddHostedService<CronJob>();
 
