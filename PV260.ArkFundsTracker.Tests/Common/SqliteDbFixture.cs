@@ -31,7 +31,8 @@ public class SqliteDbFixture : IAsyncLifetime
 
     public async Task ResetAsync()
     {
-        Context.FundPositions.RemoveRange(Context.FundPositions);
-        await Context.SaveChangesAsync();
+        await Context.FundPositions
+            .IgnoreQueryFilters()
+            .ExecuteDeleteAsync();
     }
 }

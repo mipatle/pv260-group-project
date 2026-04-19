@@ -1,4 +1,6 @@
-﻿namespace PV260.ArkFundsTracker.Tests.Common;
+﻿using System.Globalization;
+
+namespace PV260.ArkFundsTracker.Tests.Common;
 
 public static class TestDataLoader
 {
@@ -18,7 +20,7 @@ public static class TestDataLoader
 
         var today = DateOnly
             .FromDateTime(DateTime.Today)
-            .ToString("M/d/yyyy");
+            .ToString("M/d/yyyy", CultureInfo.InvariantCulture);
 
         return content.Replace("{{TODAY}}", today);
     }
