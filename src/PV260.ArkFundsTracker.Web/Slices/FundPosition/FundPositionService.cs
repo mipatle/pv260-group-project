@@ -35,7 +35,7 @@ public class FundPositionsService(AppDbContext db, HttpClient http, ILogger<Fund
         }
 
         fundPositionValidator.ValidateAll(positions);
-        
+
         var latestPositions = await SetDailyPositions(positions, adminId, ct);
         return latestPositions;
     }

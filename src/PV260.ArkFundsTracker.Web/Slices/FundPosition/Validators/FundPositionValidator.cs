@@ -15,7 +15,7 @@ public class FundPositionValidator : IFundPositionValidator
                 $"Invalid FundPosition: {string.Join(", ", results.Select(r => r.ErrorMessage))}");
         }
     }
-    
+
     public void ValidateAll(IEnumerable<FundPosition> positions)
     {
         foreach (var position in positions)
