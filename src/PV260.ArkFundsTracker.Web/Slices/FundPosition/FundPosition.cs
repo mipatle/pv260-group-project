@@ -24,6 +24,7 @@ public class FundPosition
 
     [Range(0, 100)]
     public decimal WeightPercentage { get; set; }
+
     public int? AdminId { get; set; }
     public DateTime? DeletedAt { get; set; }
 }

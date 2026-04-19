@@ -9,7 +9,11 @@ using PV260.ArkFundsTracker.Web.Slices.FundPosition.Validators;
 
 namespace PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
-public class FundPositionsService(AppDbContext db, HttpClient http, ILogger<FundPositionsService> logger, IFundPositionValidator fundPositionValidator)
+public class FundPositionsService(
+    AppDbContext db,
+    HttpClient http,
+    ILogger<FundPositionsService> logger,
+    IFundPositionValidator fundPositionValidator)
 {
     private const string ArkUrl =
         "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
