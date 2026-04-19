@@ -5,10 +5,11 @@ using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Infrastructure.Logging;
+using PV260.ArkFundsTracker.Web.Slices.FundPosition.Validators;
 
 namespace PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
-public class FundPositionsService(AppDbContext db, HttpClient http, ILogger<FundPositionsService> logger)
+public class FundPositionsService(AppDbContext db, HttpClient http, ILogger<FundPositionsService> logger, IFundPositionValidator fundPositionValidator)
 {
     private const string ArkUrl =
         "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
@@ -33,6 +34,8 @@ public class FundPositionsService(AppDbContext db, HttpClient http, ILogger<Fund
             throw new DataNotLatestException(positions.First().Date, DateOnly.FromDateTime(DateTime.Today));
         }
 
+        fundPositionValidator.ValidateAll(positions);
+        
         var latestPositions = await SetDailyPositions(positions, adminId, ct);
         return latestPositions;
     }
