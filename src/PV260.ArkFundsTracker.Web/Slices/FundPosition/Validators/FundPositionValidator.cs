@@ -12,7 +12,7 @@ public class FundPositionValidator : IFundPositionValidator
         if (!Validator.TryValidateObject(position, context, results, true))
         {
             throw new DataInconsistentException(
-                $"Invalid FundPosition: {string.Join(", ", results.Select(r => r.ErrorMessage))}");
+                $"Invalid FundPosition (Ticker: {position.Ticker}, Date: {position.Date}): {string.Join(", ", results.Select(r => r.ErrorMessage))}");
         }
     }
 
