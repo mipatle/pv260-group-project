@@ -1,0 +1,86 @@
+﻿@using System.Globalization
+@using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare
+@model PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampNavViewModel
+
+
+<div class="mb-4 d-flex align-items-end">
+    <form asp-action="Index" method="get" class="d-inline ms-3">
+        <div class="input-group">
+            <select name="firstDate" class="form-select">
+                @foreach (var date in Model.DateList)
+                {
+                    <option value="@date.ToString("yyyy-MM-dd")">
+                        @date.ToString("dd.MM.yyyy")
+                    </option>
+                }
+            </select>
+            <button type="submit" class="btn btn-secondary">Change first timestamp</button>
+        </div>
+    </form>
+</div>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+            <use xlink:href="#exclamation-triangle-fill"/>
+        </svg>
+        <div>
+            @TempData["ErrorMessage"]
+        </div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+else if (!Model.ComperedPositions.Any())
+{
+    <div class="alert alert-warning">No funds found for this date.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th colspan="3">Old positions</th>
+            <th colspan="3">Last positions
+            <th rowspan="2">Percentage</th>
+            <th rowspan="2">Situation</th>
+            <th rowspan="2">Weight</th>
+        </tr>
+        <tr>
+            <th>Ticker</th>
+            <th>Company</th>
+            <th class="text-end">Shares</th>
+
+            <th>Ticker</th>
+            <th>Company</th>
+            <th class="text-end">Shares</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var pos in Model.ComperedPositions)
+        {
+            <tr>
+                <td><strong>@pos.FirstPosition?.Ticker</strong></td>
+                <td>@pos.FirstPosition?.Company</td>
+                <td>@pos.FirstPosition?.Shares</td>
+                <td><strong>@pos.LastPosition?.Ticker</strong></td>
+                <td>@pos.LastPosition?.Company</td>
+                <td>@pos.LastPosition?.Shares</td>
+                <td class="text-end">@(pos.SharesDifferancePercentage == 0
+                        ? "0%"
+                        : pos.SharesDifferancePercentage.ToString("F5") + "%")</td>
+                <td class="text-end 
+                    @(pos.PositionState switch
+                                               {
+                                                   TimestampComparePositionState.Reduced => "text-danger",
+                                                   TimestampComparePositionState.Increased => "text-success",
+                                                   TimestampComparePositionState.New => "text-primary",
+                                                   _ => "text-muted"
+                                               })">
+                    @pos.PositionState
+                </td>
+                <td class="text-end">@((pos.LastPosition?.WeightPercentage ?? 0).ToString("F2"))%</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
