@@ -146,3 +146,11 @@ Copy-Item .env.example .env
 docker compose -f docker-compose.db.yml up -d
 ```
 
+## Testing
+
+Project includes automated tests for ingestion and audit logic.
+
+### Running tests
+
+```bash
+dotnet test
