@@ -12,17 +12,21 @@ public class TimestampCompareService
         _db = db;
     }
 
-    public async Task<List<TimestampCompareDto>> FillComparedPositionsList(DateOnly firstLast)
+    public async Task<List<TimestampCompareDto>> FillComparedPositionsList(DateOnly firstDate)
     {
-        var firstPositionsList = await FetchFundPositionList(firstLast);
+        var firstPositionsList = await FetchFundPositionList(firstDate);
         var lastPositionsList = await FetchFundPositionList(await GetLastPositionDate());
+
+        var firstDict = firstPositionsList
+            .GroupBy(x => (x.Ticker, x.Company))
+            .ToDictionary(g => g.Key, g => g.First());
+        var lastDict = lastPositionsList
+            .GroupBy(x => (x.Ticker, x.Company))
+            .ToDictionary(g => g.Key, g => g.First());
 
         var allKeys = firstPositionsList
             .Select(x => (x.Ticker, x.Company))
             .Union(lastPositionsList.Select(x => (x.Ticker, x.Company)));
-
-        var firstDict = firstPositionsList.ToDictionary(x => (x.Ticker, x.Company));
-        var lastDict = lastPositionsList.ToDictionary(x => (x.Ticker, x.Company));
 
         return
         [
@@ -47,7 +51,7 @@ public class TimestampCompareService
     )
     {
         decimal sharesDiff = 0;
-        var positionState = TimestampComparePositionState.New;
+        TimestampComparePositionState positionState;
         if (lastPosition == null)
         {
             positionState = TimestampComparePositionState.Reduced;
@@ -55,11 +59,17 @@ public class TimestampCompareService
         else if (firstPosition == null)
         {
             sharesDiff = lastPosition.Shares;
+            positionState = TimestampComparePositionState.New;
         }
         else
         {
             if (firstPosition.Shares != lastPosition.Shares)
             {
+                if (firstPosition.Shares == 0)
+                {
+                    throw new DataWithWrongValueException("Shares of specific position can't be zero.");
+                }
+                
                 sharesDiff = (lastPosition.Shares - firstPosition.Shares) / firstPosition.Shares * 100;
                 positionState = sharesDiff > 0
                     ? TimestampComparePositionState.Increased
@@ -75,12 +85,12 @@ public class TimestampCompareService
         {
             FirstPosition = firstPosition,
             LastPosition = lastPosition,
-            SharesDifferancePercentage = sharesDiff,
+            SharesDifferencePercentage = sharesDiff,
             PositionState = positionState
         };
     }
 
-    public async Task<List<TimestampNavPositionDto>> FetchFundPositionList(DateOnly date)
+    private async Task<List<TimestampNavPositionDto>> FetchFundPositionList(DateOnly date)
     {
         return await _db.FundPositions
             .Select(x => new TimestampNavPositionDto

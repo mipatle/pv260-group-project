@@ -22,9 +22,9 @@ public class TimestampNavService
             .OrderByDescending(x => x)
             .ToListAsync();
 
-        if (dateList.Count != 0)
+        if (dateList.Count > 1)
         {
-            dateList.RemoveAt(0);
+            dateList = [.. dateList.Skip(1)];
         }
 
         var finalFirstDate = firstDate ?? dateList[0];
@@ -33,7 +33,7 @@ public class TimestampNavService
         return new TimestampNavViewModel
         {
             DateList = dateList,
-            ComperedPositions = timestampCompareList
+            ComparedPositions = timestampCompareList
         };
     }
 }

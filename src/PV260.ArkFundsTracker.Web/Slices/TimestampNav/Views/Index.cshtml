@@ -30,7 +30,7 @@
         <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-else if (!Model.ComperedPositions.Any())
+else if (!Model.ComparedPositions.Any())
 {
     <div class="alert alert-warning">No funds found for this date.</div>
 }
@@ -39,35 +39,38 @@ else
     <table class="table table-striped">
         <thead>
         <tr>
-            <th colspan="3">Old positions</th>
-            <th colspan="3">Last positions
+            <th colspan="4">Old positions</th>
+            <th colspan="4">Last positions
             <th rowspan="2">Percentage</th>
             <th rowspan="2">Situation</th>
-            <th rowspan="2">Weight</th>
         </tr>
         <tr>
             <th>Ticker</th>
             <th>Company</th>
             <th class="text-end">Shares</th>
+            <th class="text-end">Weight</th>
 
             <th>Ticker</th>
             <th>Company</th>
             <th class="text-end">Shares</th>
+            <th class="text-end">Weight</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var pos in Model.ComperedPositions)
+        @foreach (var pos in Model.ComparedPositions)
         {
             <tr>
                 <td><strong>@pos.FirstPosition?.Ticker</strong></td>
                 <td>@pos.FirstPosition?.Company</td>
                 <td>@pos.FirstPosition?.Shares</td>
+                <td class="text-end">@((pos.FirstPosition?.WeightPercentage ?? 0).ToString("F2"))%</td>
                 <td><strong>@pos.LastPosition?.Ticker</strong></td>
                 <td>@pos.LastPosition?.Company</td>
                 <td>@pos.LastPosition?.Shares</td>
-                <td class="text-end">@(pos.SharesDifferancePercentage == 0
+                <td class="text-end">@((pos.LastPosition?.WeightPercentage ?? 0).ToString("F2"))%</td>
+                <td class="text-end">@(pos.SharesDifferencePercentage == 0
                         ? "0%"
-                        : pos.SharesDifferancePercentage.ToString("F5") + "%")</td>
+                        : pos.SharesDifferencePercentage.ToString("F5") + "%")</td>
                 <td class="text-end 
                     @(pos.PositionState switch
                                                {
@@ -78,7 +81,6 @@ else
                                                })">
                     @pos.PositionState
                 </td>
-                <td class="text-end">@((pos.LastPosition?.WeightPercentage ?? 0).ToString("F2"))%</td>
             </tr>
         }
         </tbody>
