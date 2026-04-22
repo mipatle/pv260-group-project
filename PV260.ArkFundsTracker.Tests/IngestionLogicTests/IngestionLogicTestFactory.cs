@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
 using PV260.ArkFundsTracker.Tests.Common;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition;
+using PV260.ArkFundsTracker.Web.Slices.FundPosition.Validators;
 
 namespace PV260.ArkFundsTracker.Tests.IngestionLogicTests;
 
@@ -13,6 +14,7 @@ public class IngestionLogicTestFactory(SqliteDbFixture db, string csv)
         return new FundPositionsService(
             db.Context,
             client,
-            NullLogger<FundPositionsService>.Instance);
+            NullLogger<FundPositionsService>.Instance,
+            new FundPositionValidator());
     }
 }

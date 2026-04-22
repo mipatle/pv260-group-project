@@ -4,11 +4,13 @@ namespace PV260.ArkFundsTracker.Tests.Common;
 
 public static class TestDataLoader
 {
-    public static string LoadCsv(string fileName)
+    private static string LoadCsv(string fileName)
     {
         var path = Path.Combine(AppContext.BaseDirectory, "TestData", fileName);
 
-        return !File.Exists(path) ? throw new FileNotFoundException($"Test data file not found: {path}") : File.ReadAllText(path);
+        return !File.Exists(path)
+            ? throw new FileNotFoundException($"Test data file not found: {path}")
+            : File.ReadAllText(path);
     }
 
     ///<summary>
