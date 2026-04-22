@@ -5,36 +5,21 @@ namespace PV260.ArkFundsTracker.Tests.FundPositionTests;
 
 public static class FundPositionTestFactory
 {
-    public static bool IsValid(FundPosition position)
+    public static List<ValidationResult> Validate(FundPosition position)
     {
         var context = new ValidationContext(position);
         var results = new List<ValidationResult>();
 
-        return Validator.TryValidateObject(
-            position,
-            context,
-            results,
-            validateAllProperties: true
-        );
+        Validator.TryValidateObject(position, context, results, true);
+
+        return results;
     }
 
-    public static List<string> GetErrors(FundPosition position)
+    public static List<ValidationResult> ValidatePosition(string ticker = "ARKK", decimal shares = 1m, DateOnly? date = null,
+        decimal marketValue = 1,
+        decimal weightPercentage = 1)
     {
-        var context = new ValidationContext(position);
-        var results = new List<ValidationResult>();
-
-        Validator.TryValidateObject(
-            position,
-            context,
-            results,
-            true
-        );
-
-        return results.Select(r => r.ErrorMessage ?? "Unknown error").ToList();
-    }
-
-    public static FundPosition CreatePosition(string ticker = "ARKK", decimal shares = 1m, DateOnly? date = null)
-        => new()
+        var model = new FundPosition
         {
             Ticker = ticker,
             Shares = shares,
@@ -42,7 +27,10 @@ public static class FundPositionTestFactory
             Fund = "ARKK",
             Company = "Test company",
             Cusip = "123456789",
-            MarketValue = 100m,
-            WeightPercentage = 1m
+            MarketValue = marketValue,
+            WeightPercentage = weightPercentage
         };
+
+        return Validate(model);
+    }
 }

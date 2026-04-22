@@ -1,42 +1,92 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
-using PV260.ArkFundsTracker.Web.Slices.FundPosition;
+﻿using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
 namespace PV260.ArkFundsTracker.Tests.FundPositionTests;
 
 public class FundPositionValidationTests
 {
-    [Fact]
-    public void Ticker_HasMaxLengthTen()
+    [Theory]
+    [InlineData("TOO_LONG_TICKER")]
+    [InlineData("12345678901")]
+    public void Ticker_LongerThan10Chars_ShouldFail(string ticker)
     {
-        var property = typeof(FundPosition).GetProperty(nameof(FundPosition.Ticker));
+        var errors = FundPositionTestFactory.ValidatePosition(ticker);
 
-        var maxLength = property?.GetCustomAttribute<MaxLengthAttribute>();
-
-        Assert.NotNull(maxLength);
-        Assert.Equal(10, maxLength.Length);
+        Assert.Contains(errors, e => e.MemberNames.Contains(nameof(FundPosition.Ticker)));
     }
 
     [Theory]
-    [InlineData("ARKK")]
-    [InlineData("A")]
-    [InlineData("ABCDEFGHIJ")]
-    public void Ticker_WithValidLength_PassesMaxLengthConstraint(string ticker)
+    [InlineData("123")]
+    [InlineData("1234567890")]
+    [InlineData("")]
+    public void Ticker_Max10Chars_ShouldPass(string ticker)
     {
-        var position = FundPositionTestFactory.CreatePosition(ticker: ticker);
+        var errors = FundPositionTestFactory.ValidatePosition(ticker);
 
-        Assert.True(FundPositionTestFactory.IsValid(position));
+        Assert.Empty(errors);
     }
 
-    [Fact]
-    public void Ticker_WithTooLongValue_FailsMaxLengthConstraint()
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(-0.01)]
+    [InlineData(-100)]
+    public void Shares_NegativeValues_ShouldFail(decimal shares)
     {
-        var position = FundPositionTestFactory.CreatePosition(ticker: "ABCDEFGHIJK");
+        var errors = FundPositionTestFactory.ValidatePosition(shares: shares);
 
-        Assert.False(FundPositionTestFactory.IsValid(position));
+        Assert.Contains(errors, e => e.MemberNames.Contains(nameof(FundPosition.Shares)));
+    }
 
-        var errors = FundPositionTestFactory.GetErrors(position);
-        Assert.NotEmpty(errors);
-        Assert.Contains(errors, e => e.Contains("Ticker"));
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(4242)]
+    public void Shares_PositiveValues_ShouldPass(decimal shares)
+    {
+        var errors = FundPositionTestFactory.ValidatePosition(shares: shares);
+
+        Assert.Empty(errors);
+    }
+
+    [Theory]
+    [InlineData(-11)]
+    [InlineData(-1)]
+    [InlineData(-0.01)]
+    public void MarketValue_NegativeValues_ShouldFail(decimal value)
+    {
+        var errors = FundPositionTestFactory.ValidatePosition(marketValue: value);
+
+        Assert.Contains(errors, e => e.MemberNames.Contains(nameof(FundPosition.MarketValue)));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(25)]
+    [InlineData(42)]
+    public void MarketValue_PositiveValues_ShouldPass(decimal value)
+    {
+        var errors = FundPositionTestFactory.ValidatePosition(marketValue: value);
+
+        Assert.Empty(errors);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(101)]
+    public void WeightPercentage_OutOfRange_ShouldFail(decimal value)
+    {
+        var errors = FundPositionTestFactory.ValidatePosition(weightPercentage: value);
+
+        Assert.Contains(errors, e => e.MemberNames.Contains(nameof(FundPosition.WeightPercentage)));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(100)]
+    public void WeightPercentage_Between0And100_ShouldPass(decimal value)
+    {
+        var errors = FundPositionTestFactory.ValidatePosition(weightPercentage: value);
+
+        Assert.Empty(errors);
     }
 }
