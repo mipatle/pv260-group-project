@@ -14,8 +14,7 @@ public class TimestampNavController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(DateOnly? firstDate)
     {
-        var decimalPlaces = Request.Query["decimalPlaces"].FirstOrDefault();
-        var viewModel = await _timestampNavService.FillTimestampNavViewModel(firstDate, decimalPlaces);
+        var viewModel = await _timestampNavService.FillTimestampNavViewModel(firstDate);
         return View(viewModel);
     }
 }

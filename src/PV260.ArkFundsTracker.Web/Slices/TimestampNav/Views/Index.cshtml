@@ -23,7 +23,7 @@
             <label>Decimal places for percentage: </label>
             <select id="decimalSelect" class="form-select w-25">
                 <option value="0">0</option>
-                <option value="2" selected="@(Model.DecimalPlaces == null)">2</option>
+                <option value="2">2</option>
                 <option value="4">4</option>
                 <option value="6">6</option>
             </select>
@@ -80,7 +80,12 @@ else
                 _ => "bg-muted"
             };
 
-            var decimalPlaces = int.TryParse(Model.DecimalPlaces, out var p) ? p : 2;
+            var decimalPlaces = 2;
+            var cookie = Context.Request.Cookies["decimalPlaces"];
+            if (int.TryParse(cookie, out var val))
+            {
+                decimalPlaces = val;
+            }
 
             <tr>
                 <td class="@color"><strong>@pos.FirstPosition?.Ticker</strong></td>
@@ -109,7 +114,7 @@ else
                     }
                     else
                     {
-                        @(pos.SharesDifferencePercentage.ToString("F" + @Model.DecimalPlaces) + "%")
+                        @(pos.SharesDifferencePercentage.ToString("F" + @decimalPlaces) + "%")
                     }
                 </td>
                 <td class="text-end fw-bolder @color
@@ -133,13 +138,22 @@ else
     const key = "decimalPlaces";
     const select = document.getElementById("decimalSelect");
 
-    const saved = sessionStorage.getItem(key);
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            return parts.pop().split(';').shift();
+        }
+        return null;
+    }
+
+    const saved = getCookie(key);
     if (saved !== null) {
         select.value = saved;
     }
 
     select.addEventListener("change", () => {
-        sessionStorage.setItem(key, select.value);
-        window.location.href = `?decimalPlaces=${select.value}`;
+        document.cookie = "decimalPlaces=" + select.value + "; path=/; max-age=6000";
+        location.reload();
     });
 </script>

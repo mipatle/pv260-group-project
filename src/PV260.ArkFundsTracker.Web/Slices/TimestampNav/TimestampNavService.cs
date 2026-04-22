@@ -15,7 +15,7 @@ public class TimestampNavService
         _timestampCompareService = timestampCompareService;
     }
 
-    public async Task<TimestampNavViewModel> FillTimestampNavViewModel(DateOnly? firstDate, string? decimalPlaces)
+    public async Task<TimestampNavViewModel> FillTimestampNavViewModel(DateOnly? firstDate)
     {
         var dateList = await _db.FundPositions.Select(x => x.Date)
             .Distinct()
@@ -35,7 +35,6 @@ public class TimestampNavService
         return new TimestampNavViewModel
         {
             SelectedDate = finalFirstDate,
-            DecimalPlaces = decimalPlaces,
             DateList = dateList,
             ComparedPositions = sortedTimestampCompareList
         };
