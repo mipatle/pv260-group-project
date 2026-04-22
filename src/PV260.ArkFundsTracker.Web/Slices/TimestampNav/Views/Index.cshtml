@@ -17,7 +17,7 @@
             <button type="submit" class="btn btn-secondary">Change first timestamp</button>
             <label class="ms-3 fs-2">- compared to last saved timestamp on
                 <b class="ms-1"> @Model.DateList.First()</b></label>
-            
+
         </div>
         <div class="input-group-sm mt-2">
             <label>Decimal places for percentage: </label>
@@ -79,7 +79,7 @@ else
                 TimestampComparePositionState.New => "bg-primary",
                 _ => "bg-muted"
             };
-            
+
             var decimalPlaces = int.TryParse(Model.DecimalPlaces, out var p) ? p : 2;
 
             <tr>
@@ -132,12 +132,12 @@ else
 <script>
     const key = "decimalPlaces";
     const select = document.getElementById("decimalSelect");
-    
+
     const saved = sessionStorage.getItem(key);
     if (saved !== null) {
         select.value = saved;
     }
-    
+
     select.addEventListener("change", () => {
         sessionStorage.setItem(key, select.value);
         window.location.href = `?decimalPlaces=${select.value}`;
