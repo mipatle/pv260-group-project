@@ -73,6 +73,7 @@ For Docker Compose, the web container uses the `db` service name internally and 
 - `Slices/Home/` - Home feature (controller, view model, and views)
 - `Slices/Common/` - shared contracts/views (error model + error view)
 - `Slices/FundPosition/` - FundPosition (entity model)
+- `Slices/TimestampNav/` - TimestampNav (controller, view model, services, and view) for timestamps compare
 - `Infrastructure/DependencyInjection/` - startup registration extensions
 - `Infrastructure/Configuration/` - strongly typed options
 - `Infrastructure/Data/` - Database connection (DB context, entities configuration)
