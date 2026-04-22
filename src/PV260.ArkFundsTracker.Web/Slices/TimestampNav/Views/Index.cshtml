@@ -17,6 +17,16 @@
             <button type="submit" class="btn btn-secondary">Change first timestamp</button>
             <label class="ms-3 fs-2">- compared to last saved timestamp on
                 <b class="ms-1"> @Model.DateList.First()</b></label>
+            
+        </div>
+        <div class="input-group-sm mt-2">
+            <label>Decimal places for percentage: </label>
+            <select id="decimalSelect" class="form-select w-25">
+                <option value="0">0</option>
+                <option value="2" selected="@(Model.DecimalPlaces == null)">2</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+            </select>
         </div>
     </form>
 </div>
@@ -69,6 +79,8 @@ else
                 TimestampComparePositionState.New => "bg-primary",
                 _ => "bg-muted"
             };
+            
+            var decimalPlaces = int.TryParse(Model.DecimalPlaces, out var p) ? p : 2;
 
             <tr>
                 <td class="@color"><strong>@pos.FirstPosition?.Ticker</strong></td>
@@ -83,7 +95,7 @@ else
                 <td class="text-end @color">@((pos.LastPosition?.WeightPercentage == null
                         ? ""
                         : pos.LastPosition.WeightPercentage.ToString("F2") + "%"))</td>
-                <td class="text-end fw-bold @color
+                <td class="text-end fw-bold @color 
                     @(pos.SharesDifferencePercentage <= 0 || pos.PositionState == TimestampComparePositionState.Sold
                                                                           ? "text-danger"
                                                                           : "text-success")">
@@ -97,7 +109,7 @@ else
                     }
                     else
                     {
-                        @(pos.SharesDifferencePercentage.ToString("F3") + "%")
+                        @(pos.SharesDifferencePercentage.ToString("F" + @Model.DecimalPlaces) + "%")
                     }
                 </td>
                 <td class="text-end fw-bolder @color
@@ -116,3 +128,18 @@ else
         </tbody>
     </table>
 }
+
+<script>
+    const key = "decimalPlaces";
+    const select = document.getElementById("decimalSelect");
+    
+    const saved = sessionStorage.getItem(key);
+    if (saved !== null) {
+        select.value = saved;
+    }
+    
+    select.addEventListener("change", () => {
+        sessionStorage.setItem(key, select.value);
+        window.location.href = `?decimalPlaces=${select.value}`;
+    });
+</script>
