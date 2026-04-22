@@ -57,7 +57,7 @@ public class TimestampCompareService
 
         if (lastPosition == null)
         {
-            return FetchTimestampCompare(firstPosition, lastPosition, 100, TimestampComparePositionState.Sold);
+            return FetchTimestampCompare(firstPosition, lastPosition, -100, TimestampComparePositionState.Sold);
         }
 
         if (firstPosition.Shares == lastPosition.Shares)

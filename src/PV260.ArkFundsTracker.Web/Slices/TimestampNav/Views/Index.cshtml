@@ -2,7 +2,6 @@
 @using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare
 @model PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampNavViewModel
 
-
 <div class="mb-4 d-flex align-items-end">
     <form asp-action="Index" method="get" class="d-inline ms-3">
         <div class="input-group">
@@ -39,9 +38,9 @@ else if (!Model.ComparedPositions.Any())
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
-        <tr>
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+        <tr class="border-start-1">
             <th colspan="4">Old positions</th>
             <th colspan="4">Last positions
             <th rowspan="2">Percentage</th>
@@ -59,30 +58,58 @@ else
             <th class="text-end">Weight</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody class="table-bordered table-light">
         @foreach (var pos in Model.ComparedPositions)
         {
+            var color = "bg-opacity-25 " + pos.PositionState switch
+            {
+                TimestampComparePositionState.Sold => "bg-danger",
+                TimestampComparePositionState.Reduced => "bg-danger",
+                TimestampComparePositionState.Increased => "bg-success",
+                TimestampComparePositionState.New => "bg-primary",
+                _ => "bg-muted"
+            };
+
             <tr>
-                <td><strong>@pos.FirstPosition?.Ticker</strong></td>
-                <td>@pos.FirstPosition?.Company</td>
-                <td>@pos.FirstPosition?.Shares</td>
-                <td class="text-end">@((pos.FirstPosition?.WeightPercentage ?? 0).ToString("F2"))%</td>
-                <td><strong>@pos.LastPosition?.Ticker</strong></td>
-                <td>@pos.LastPosition?.Company</td>
-                <td>@pos.LastPosition?.Shares</td>
-                <td class="text-end">@((pos.LastPosition?.WeightPercentage ?? 0).ToString("F2"))%</td>
-                <td class="text-end">@(pos.SharesDifferencePercentage == 0
-                        ? "0%"
-                        : pos.SharesDifferencePercentage.ToString("F5") + "%")</td>
-                <td class="text-end 
+                <td class="@color"><strong>@pos.FirstPosition?.Ticker</strong></td>
+                <td class="@color">@pos.FirstPosition?.Company</td>
+                <td class="text-end @color">@pos.FirstPosition?.Shares.ToString("F0")</td>
+                <td class="text-end @color">@((pos.FirstPosition?.WeightPercentage == null
+                        ? ""
+                        : pos.FirstPosition.WeightPercentage.ToString("F2") + "%"))</td>
+                <td class="@color"><strong>@pos.LastPosition?.Ticker</strong></td>
+                <td class="@color">@pos.LastPosition?.Company</td>
+                <td class="text-end @color">@pos.LastPosition?.Shares.ToString("F0")</td>
+                <td class="text-end @color">@((pos.LastPosition?.WeightPercentage == null
+                        ? ""
+                        : pos.LastPosition.WeightPercentage.ToString("F2") + "%"))</td>
+                <td class="text-end fw-bold @color
+                    @(pos.SharesDifferencePercentage <= 0 || pos.PositionState == TimestampComparePositionState.Sold
+                                                                          ? "text-danger"
+                                                                          : "text-success")">
+                    @if (pos.SharesDifferencePercentage == 0)
+                    {
+                        @("")
+                    }
+                    else if (pos.PositionState == TimestampComparePositionState.Sold)
+                    {
+                        @(pos.SharesDifferencePercentage.ToString("F0") + "%")
+                    }
+                    else
+                    {
+                        @(pos.SharesDifferencePercentage.ToString("F3") + "%")
+                    }
+                </td>
+                <td class="text-end fw-bolder @color
                     @(pos.PositionState switch
-                                               {
-                                                   TimestampComparePositionState.Reduced => "text-danger",
-                                                   TimestampComparePositionState.Increased => "text-success",
-                                                   TimestampComparePositionState.New => "text-primary",
-                                                   _ => "text-muted"
-                                               })">
-                    @pos.PositionState
+                                                                        {
+                                                                            TimestampComparePositionState.Sold => "text-danger",
+                                                                            TimestampComparePositionState.Reduced => "text-danger",
+                                                                            TimestampComparePositionState.Increased => "text-success",
+                                                                            TimestampComparePositionState.New => "text-primary",
+                                                                            _ => "text-muted"
+                                                                        })">
+                    @(pos.PositionState == TimestampComparePositionState.Sold ? TimestampComparePositionState.Reduced : pos.PositionState)
                 </td>
             </tr>
         }

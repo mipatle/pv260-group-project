@@ -29,12 +29,14 @@ public class TimestampNavService
 
         var finalFirstDate = firstDate ?? dateList[1];
         var timestampCompareList = await _timestampCompareService.FillComparedPositionsList(finalFirstDate);
+        var sortedTimestampCompareList = timestampCompareList
+            .OrderBy(x => x.PositionState).ThenByDescending(y => Math.Abs(y.SharesDifferencePercentage)).ToList();
 
         return new TimestampNavViewModel
         {
             SelectedDate = finalFirstDate,
             DateList = dateList,
-            ComparedPositions = timestampCompareList
+            ComparedPositions = sortedTimestampCompareList
         };
     }
 }
