@@ -40,7 +40,7 @@ public class FundPositionValidationTests
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(4242)]
-    public void Shares_PositiveValues_ShouldPass(decimal shares)
+    public void Shares_NonNegativeValues_ShouldPass(decimal shares)
     {
         var errors = FundPositionTestFactory.ValidatePosition(shares: shares);
 
@@ -62,7 +62,7 @@ public class FundPositionValidationTests
     [InlineData(0)]
     [InlineData(25)]
     [InlineData(42)]
-    public void MarketValue_PositiveValues_ShouldPass(decimal value)
+    public void MarketValue_NonNegativeValues_ShouldPass(decimal value)
     {
         var errors = FundPositionTestFactory.ValidatePosition(marketValue: value);
 
