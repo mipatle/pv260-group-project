@@ -22,16 +22,17 @@ public class TimestampNavService
             .OrderByDescending(x => x)
             .ToListAsync();
 
-        if (dateList.Count > 1)
+        if (dateList.Count <= 1)
         {
-            dateList = [.. dateList.Skip(1)];
+            throw new DataWithWrongValueException("To compare must be two timestamps minimal.");
         }
 
-        var finalFirstDate = firstDate ?? dateList[0];
+        var finalFirstDate = firstDate ?? dateList[1];
         var timestampCompareList = await _timestampCompareService.FillComparedPositionsList(finalFirstDate);
 
         return new TimestampNavViewModel
         {
+            SelectedDate = finalFirstDate,
             DateList = dateList,
             ComparedPositions = timestampCompareList
         };

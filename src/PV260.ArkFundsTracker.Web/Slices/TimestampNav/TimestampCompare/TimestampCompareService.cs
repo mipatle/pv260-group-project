@@ -50,37 +50,37 @@ public class TimestampCompareService
         TimestampNavPositionDto? lastPosition
     )
     {
-        decimal sharesDiff = 0;
-        TimestampComparePositionState positionState;
-        if (lastPosition == null)
+        if (firstPosition == null)
         {
-            positionState = TimestampComparePositionState.Reduced;
-        }
-        else if (firstPosition == null)
-        {
-            sharesDiff = lastPosition.Shares;
-            positionState = TimestampComparePositionState.New;
-        }
-        else
-        {
-            if (firstPosition.Shares != lastPosition.Shares)
-            {
-                if (firstPosition.Shares == 0)
-                {
-                    throw new DataWithWrongValueException("Shares of specific position can't be zero.");
-                }
-                
-                sharesDiff = (lastPosition.Shares - firstPosition.Shares) / firstPosition.Shares * 100;
-                positionState = sharesDiff > 0
-                    ? TimestampComparePositionState.Increased
-                    : TimestampComparePositionState.Reduced;
-            }
-            else
-            {
-                positionState = TimestampComparePositionState.Same;
-            }
+            return FetchTimestampCompare(firstPosition, lastPosition, 0, TimestampComparePositionState.New);
         }
 
+        if (lastPosition == null)
+        {
+            return FetchTimestampCompare(firstPosition, lastPosition, 100, TimestampComparePositionState.Sold);
+        }
+
+        if (firstPosition.Shares == lastPosition.Shares)
+        {
+            return FetchTimestampCompare(firstPosition, lastPosition, 0, TimestampComparePositionState.Same);
+        }
+
+        if (firstPosition.Shares == 0)
+        {
+            throw new DataWithWrongValueException("Shares of specific position can't be zero.");
+        }
+
+        var sharesDiff = (lastPosition.Shares - firstPosition.Shares) / firstPosition.Shares * 100;
+        var positionState = sharesDiff > 0
+            ? TimestampComparePositionState.Increased
+            : TimestampComparePositionState.Reduced;
+
+        return FetchTimestampCompare(firstPosition, lastPosition, sharesDiff, positionState);
+    }
+
+    private static TimestampCompareDto FetchTimestampCompare(TimestampNavPositionDto? firstPosition,
+        TimestampNavPositionDto? lastPosition, decimal sharesDiff, TimestampComparePositionState positionState)
+    {
         return new TimestampCompareDto
         {
             FirstPosition = firstPosition,

@@ -5,5 +5,6 @@ public enum TimestampComparePositionState
     New,
     Same,
     Increased,
-    Reduced
+    Reduced,
+    Sold
 }

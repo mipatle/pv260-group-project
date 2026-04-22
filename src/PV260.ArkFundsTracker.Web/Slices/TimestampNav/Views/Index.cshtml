@@ -7,14 +7,17 @@
     <form asp-action="Index" method="get" class="d-inline ms-3">
         <div class="input-group">
             <select name="firstDate" class="form-select">
-                @foreach (var date in Model.DateList)
+                @foreach (var date in Model.DateList.Where(date => date != Model.DateList.First()))
                 {
-                    <option value="@date.ToString("yyyy-MM-dd")">
+                    <option value="@date.ToString("yyyy-MM-dd")"
+                            selected="@(date == @Model.SelectedDate)">
                         @date.ToString("dd.MM.yyyy")
                     </option>
                 }
             </select>
             <button type="submit" class="btn btn-secondary">Change first timestamp</button>
+            <label class="ms-3 fs-2">- compared to last saved timestamp on
+                <b class="ms-1"> @Model.DateList.First()</b></label>
         </div>
     </form>
 </div>
