@@ -89,7 +89,8 @@ If needed, you can still override this value using `ConnectionStrings__Default` 
 
 Use the sample file and create your local `.env`:
 
-    Copy-Item .env.example .env
+    macOS/Linux: cp .env.example .env
+    PowerShell: Copy-Item .env.example .env
 
 `.env` is used by Docker Compose to configure:
 
