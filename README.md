@@ -8,7 +8,7 @@ The application follows a vertical slice architecture and focuses on clean separ
 
 Repository containing group project of team-1.
 
-> Built with **.NET 10** (SDK **10.0.100**, as pinned in `global.json`)
+> Built with **.NET 10**
 
 ---
 
@@ -89,8 +89,8 @@ If needed, you can still override this value using `ConnectionStrings__Default` 
 
 Use the sample file and create your local `.env`:
 
-    macOS/Linux: cp .env.example .env
-    PowerShell: Copy-Item .env.example .env
+#### Windows (PowerShell)
+    Copy-Item .env.example .env
 
 `.env` is used by Docker Compose to configure:
 
