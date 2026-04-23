@@ -8,7 +8,7 @@ The application follows a vertical slice architecture and focuses on clean separ
 
 Repository containing group project of team-1.
 
-> Built with **.NET 10**
+> Built with **.NET 10** (SDK **10.0.100**, as pinned in `global.json`)
 
 ---
 
