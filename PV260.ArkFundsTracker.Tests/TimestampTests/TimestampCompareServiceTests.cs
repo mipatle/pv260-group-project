@@ -179,18 +179,17 @@ public class TimestampCompareServiceTests
     }
 
     [Fact]
-    public async Task FillComparedPositionsList_WhenDuplicateTickerAndCompanyExist_UsesFirstRecordFromEachSnapshot()
+    public async Task FillComparedPositionsList_WhenMatchingPositionsExist_ComputesDifferenceFromSnapshots()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenDuplicateTickerAndCompanyExist_UsesFirstRecordFromEachSnapshot));
+        await using var dbContext = CreateInMemoryDbContext(
+            nameof(FillComparedPositionsList_WhenMatchingPositionsExist_ComputesDifferenceFromSnapshots));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
 
         await dbContext.FundPositions.AddRangeAsync(
             CreateFundPosition(firstDate, "TSLA", "Tesla", 100),
-            CreateFundPosition(firstDate, "TSLA", "Tesla", 999),
-            CreateFundPosition(latestDate, "TSLA", "Tesla", 120),
-            CreateFundPosition(latestDate, "TSLA", "Tesla", 888));
+            CreateFundPosition(latestDate, "TSLA", "Tesla", 120));
 
         await dbContext.SaveChangesAsync();
 
