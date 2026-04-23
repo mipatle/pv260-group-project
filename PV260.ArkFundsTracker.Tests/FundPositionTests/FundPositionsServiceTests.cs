@@ -35,6 +35,20 @@ public class FundPositionsServiceTests
     }
 
     [Fact]
+    public async Task GetHistory_WhenNoPositionsExist_ReturnsEmptyList()
+    {
+        var selectedDate = new DateOnly(2026, 4, 20);
+
+        await using var dbContext = CreateInMemoryDbContext(nameof(GetHistory_WhenNoPositionsExist_ReturnsEmptyList));
+
+        var service = CreateService(dbContext);
+
+        var result = await service.GetHistory(selectedDate);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
     public async Task GetHistory_WhenSoftDeletedPositionsExist_DoesNotReturnThem()
     {
         var selectedDate = new DateOnly(2026, 4, 20);
@@ -96,7 +110,41 @@ public class FundPositionsServiceTests
     }
 
     [Fact]
-    public async Task FetchAndSaveLatest_WhenCsvIsValid_CallsValidatorOnce()
+    public async Task FetchAndSaveLatest_WhenCsvContainsMultipleDates_ThrowsDataInconsistentException()
+    {
+        await using var dbContext = CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenCsvContainsMultipleDates_ThrowsDataInconsistentException));
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var yesterday = today.AddDays(-1);
+
+        var csv = CreateArkCsv(
+            CreateCsvRow(today, "TSLA", "Tesla Inc.", "123456789", 100, 1000, 10),
+            CreateCsvRow(yesterday, "COIN", "Coinbase Global Inc.", "987654321", 50, 500, 5));
+
+        var service = CreateService(dbContext, csv);
+
+        var exception = await Assert.ThrowsAsync<DataInconsistentException>(() => service.FetchAndSaveLatest());
+
+        Assert.Equal("Positions must all have the same date.", exception.Message);
+    }
+
+    [Fact]
+    public async Task FetchAndSaveLatest_WhenCsvIsMalformed_ThrowsDataInconsistentException()
+    {
+        await using var dbContext = CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenCsvIsMalformed_ThrowsDataInconsistentException));
+
+        var malformedCsv = """
+                           date,fund,ticker,company,cusip,shares,market value ($),weight (%)
+                           invalid-date,ARKK,TSLA,Tesla Inc.,123456789,100,1000,10
+                           """;
+
+        var service = CreateService(dbContext, malformedCsv);
+
+        await Assert.ThrowsAsync<DataInconsistentException>(() => service.FetchAndSaveLatest());
+    }
+
+    [Fact]
+    public async Task FetchAndSaveLatest_WhenCsvIsValid_ValidatesParsedPositions()
     {
         var (dbContext, connection) = await CreateSqliteDbContextAsync();
         await using var _ = dbContext;
@@ -116,6 +164,30 @@ public class FundPositionsServiceTests
         Assert.NotNull(validator.LastValidatedPositions);
         Assert.Equal(2, validator.LastValidatedPositions!.Count);
         Assert.All(validator.LastValidatedPositions, position => Assert.Equal(today, position.Date));
+    }
+
+    [Fact]
+    public async Task FetchAndSaveLatest_WhenValidatorFails_ThrowsExceptionAndDoesNotSavePositions()
+    {
+        var (dbContext, connection) = await CreateSqliteDbContextAsync();
+        await using var _ = dbContext;
+        await using var __ = connection;
+
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var csv = CreateArkCsv(
+            CreateCsvRow(today, "TSLA", "Tesla Inc.", "123456789", 100, 1000, 10),
+            CreateCsvRow(today, "COIN", "Coinbase Global Inc.", "987654321", 50, 500, 5));
+
+        var service = CreateService(dbContext, csv, validator: new ThrowingFundPositionValidator());
+
+        await Assert.ThrowsAsync<DataInconsistentException>(() => service.FetchAndSaveLatest());
+
+        var savedPositions = await dbContext.FundPositions
+            .IgnoreQueryFilters()
+            .Where(position => position.Date == today)
+            .ToListAsync();
+
+        Assert.Empty(savedPositions);
     }
 
     [Fact]
@@ -178,6 +250,9 @@ public class FundPositionsServiceTests
         var result = await service.FetchAndSaveLatest(adminId: 7);
 
         Assert.Equal(2, result.Count);
+        Assert.All(result, position => Assert.Null(position.DeletedAt));
+        Assert.Contains(result, position => position.Ticker == "TSLA");
+        Assert.Contains(result, position => position.Ticker == "COIN");
 
         var allPositionsForDate = await dbContext.FundPositions
             .IgnoreQueryFilters()
@@ -331,6 +406,18 @@ public class FundPositionsServiceTests
         {
             ValidateAllCallCount++;
             LastValidatedPositions = positions.ToList();
+        }
+    }
+
+    private sealed class ThrowingFundPositionValidator : IFundPositionValidator
+    {
+        public void Validate(FundPosition position)
+        {
+        }
+
+        public void ValidateAll(IEnumerable<FundPosition> positions)
+        {
+            throw new DataInconsistentException("Validation failed.");
         }
     }
 
