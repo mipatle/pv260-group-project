@@ -6,7 +6,7 @@ It allows users to view historical fund data, refresh and store the latest data 
 
 The application follows a vertical slice architecture and focuses on clean separation of concerns, testability, and maintainable code structure.
 
-Repository containing group project of team-1.
+Repository containing the group project for team-1.
 
 > Built with **.NET 10**
 
@@ -22,7 +22,7 @@ Use the repository hooks for commit message validation, linting, and pre-push te
 
 Commit subject must match:
 
-- `<command>(us[0-9]+): text`
+- <type>(us<NUMBER>): message
 - allowed commands: `feat`, `fix`, `refactor`, `docs`, `style`, `test`, `chore`, `ci`, `build`, `perf`, `revert`
 - example: `feat(us3): add CI workflow`
 
@@ -46,22 +46,21 @@ All the artifacts required for `milestone-1` are located in `doc/` folder:
 
 ## Milestone 2
 
-### US3 Project Setup & MVC Infrastructure
+This milestone introduces the core application architecture, database integration, runtime configuration and tests.
 
-The ASP.NET Core MVC solution skeleton is located in:
+### Project Structure
+
+The ASP.NET Core MVC solution is located in:
 
     src/PV260.ArkFundsTracker.Web
 
----
+### Database
 
-### US4 Database Schema & PostgreSQL Configuration
+The project uses PostgreSQL.
 
-Project uses PostgreSQL database.  
-Connection string key used by the app is:
+Connection string key used by the application:
 
     ConnectionStrings:Default
-
----
 
 ### Configuration Model
 
@@ -89,33 +88,40 @@ If needed, you can still override this value using `ConnectionStrings__Default` 
 
 Use the sample file and create your local `.env`:
 
-#### Windows (PowerShell)
+#### Create `.env` file
+
+##### Windows (PowerShell)
     Copy-Item .env.example .env
 
-`.env` is used by Docker Compose to configure:
+##### macOS / Linux
+    cp .env.example .env
+
+The `.env` file is used by Docker Compose to configure:
 
 - PostgreSQL credentials and port
-- `APP_ENVIRONMENT` to switch between `Development` and `Production`
+- `APP_ENVIRONMENT` (e.g., `Development`, `Production`)
 
-`.env` values are for Compose-run containers.  
-Local host-run (`dotnet run`) uses `appsettings.Development.json` or optional user-secrets overrides.
+`.env` values apply only to containerized (Docker Compose) runs.  
+When running locally via `dotnet run`, the application uses `appsettings.Development.json` or optional user-secrets overrides.
 
-Default PostgreSQL image is pinned to `postgres:17` via `POSTGRES_IMAGE` to avoid `postgres:latest` major-upgrade surprises during local development.
+The PostgreSQL image is pinned to `postgres:17` via `POSTGRES_IMAGE` to avoid unexpected upgrades.
 
-`dotnet run` uses the connection string from `appsettings.Development.json` by default.  
-For Docker Compose, the web container uses the `db` service name internally and sets `ConnectionStrings__Default` itself.
+For Docker Compose, the web container connects to the database using the `db` service name and sets `ConnectionStrings__Default` internally.
 
 ---
 
 ### Vertical Slice Structure
 
-- `Slices/Home/` – Home feature (controller, view model, and views)
-- `Slices/Common/` – shared contracts/views (error model + error view)
-- `Slices/FundPosition/` – FundPosition (entity model)
-- `Infrastructure/DependencyInjection/` – startup registration extensions
+- `Slices/Home/` – Home feature (controller, view model, views)
+- `Slices/Common/` – shared contracts and views (e.g., error handling)
+- `Slices/FundPosition/` – fund position feature (data ingestion, storage, logic)
+- `Slices/TimestampNav/` – timestamp navigation and selection logic
+- `Slices/CronFetching/` – scheduled data fetching (background tasks)
+- `Infrastructure/DependencyInjection/` – service registration
 - `Infrastructure/Configuration/` – strongly typed options
-- `Infrastructure/Data/` – Database connection (DB context, entities configuration)
-- `Migrations/` – Migrations for database
+- `Infrastructure/Data/` – database context and configuration
+- `Infrastructure/Logging/` – structured logging (CSV parsing, fetching, cron jobs)
+- `Migrations/` – database migrations
 
 ---
 

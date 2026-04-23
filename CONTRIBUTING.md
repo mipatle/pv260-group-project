@@ -12,6 +12,8 @@ Examples:
 - us5-project-documentation
 - us14-unit-testing-ingestion
 
+---
+
 ## Commit Message Format
 
 Commit messages must follow:
@@ -34,6 +36,8 @@ Allowed types:
 Example:
 feat(us10): add CI workflow
 
+---
+
 ## Workflow
 
 1. Create a branch from `milestone-X` or `main`
@@ -41,6 +45,8 @@ feat(us10): add CI workflow
 3. Write/update tests
 4. Run tests locally
 5. Create a Pull Request
+
+---
 
 ## Pull Requests
 
@@ -54,12 +60,16 @@ PR should include:
 - Why it was implemented
 - Any limitations
 
+---
+
 ## Code Style
 
-- Follow existing project structure
+- Follow the existing project structure
 - Keep methods small and readable
 - Use meaningful names
 - Avoid unnecessary complexity
+
+---
 
 ## Testing
 
@@ -71,11 +81,15 @@ Run tests:
 
 dotnet test
 
+---
+
 ## Pre-push Checks
 
 Before pushing:
 - Tests must pass
 - Code should compile without warnings
+
+---
 
 ## Notes
 
