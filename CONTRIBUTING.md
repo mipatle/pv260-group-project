@@ -6,7 +6,7 @@ This document defines the workflow and conventions for contributing to the proje
 
 Branches must follow this format:
 
-us<NUMBER>-short-description
+`us<NUMBER>-short-description`
 
 Examples:
 - us5-project-documentation
@@ -18,7 +18,7 @@ Examples:
 
 Commit messages must follow:
 
-<type>(us<NUMBER>): message
+`<type>(us<NUMBER>): message`
 
 Allowed types:
 - feat
