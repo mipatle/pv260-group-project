@@ -1,0 +1,29 @@
+﻿using System.Globalization;
+
+namespace PV260.ArkFundsTracker.Tests.Common;
+
+public static class TestDataLoader
+{
+    private static string LoadCsv(string fileName)
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "TestData", fileName);
+
+        return !File.Exists(path)
+            ? throw new FileNotFoundException($"Test data file not found: {path}")
+            : File.ReadAllText(path);
+    }
+
+    ///<summary>
+    /// Loads a CSV file and replaces the placeholder {{TODAY}} with the current date in M/d/yyyy format.
+    /// </summary>
+    public static string LoadCsvWithToday(string fileName)
+    {
+        var content = LoadCsv(fileName);
+
+        var today = DateOnly
+            .FromDateTime(DateTime.Today)
+            .ToString("M/d/yyyy", CultureInfo.InvariantCulture);
+
+        return content.Replace("{{TODAY}}", today);
+    }
+}

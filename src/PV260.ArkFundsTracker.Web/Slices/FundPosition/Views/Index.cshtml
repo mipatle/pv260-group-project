@@ -1,0 +1,69 @@
+@using System.Globalization
+@model PV260.ArkFundsTracker.Web.Slices.FundPosition.FundHoldingsViewModel
+
+<h2>ARKK Fund Holdings</h2>
+
+<div class="alert alert-info d-flex justify-content-between align-items-center">
+    <span>
+        Showing data for: <strong>@Model.SelectedDate.ToShortDateString()</strong>
+    </span>
+    <span class="badge @(Model.IsFromDatabase ? "bg-secondary" : "bg-success")">
+        Source: @(Model.IsFromDatabase ? "Data from Database" : "Freshly fetched data")
+    </span>
+</div>
+
+<div class="mb-4 d-flex align-items-end">
+    <form asp-action="Refresh" method="post" class="d-inline">
+        <button type="submit" class="btn btn-primary">Refresh Latest Data</button>
+    </form>
+
+    <form asp-action="Index" method="get" class="d-inline ms-3">
+        <div class="input-group">
+            <input type="date" name="date" class="form-control" value="@Model.SelectedDate.ToString("yyyy-MM-dd")"
+                   required/>
+            <button type="submit" class="btn btn-secondary">Get Historical Data</button>
+        </div>
+    </form>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+            <use xlink:href="#exclamation-triangle-fill"/>
+        </svg>
+        <div>
+            @TempData["ErrorMessage"]
+        </div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+else if (!Model.Positions.Any())
+{
+    <div class="alert alert-warning">No funds found for this date.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Ticker</th>
+            <th>Company</th>
+            <th class="text-end">Shares</th>
+            <th class="text-end">Weight</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var pos in Model.Positions.OrderByDescending(p => p.WeightPercentage))
+        {
+            <tr>
+                <td><strong>@pos.Ticker</strong></td>
+                <td>@pos.Company</td>
+                <td class="text-end">@pos.Shares.ToString("N0")</td>
+                <td class="text-end">@pos.MarketValue.ToString("C0", CultureInfo.GetCultureInfo("en-US"))</td>
+                <td class="text-end">@pos.WeightPercentage.ToString("F2")%</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

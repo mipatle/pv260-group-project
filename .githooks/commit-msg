@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+set -eu
+
+subject_line="$(sed -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' "$1" | head -n 1 | tr -d '\r')"
+pattern='^(feat|fix|refactor|docs|style|test|chore|ci|build|perf|revert)\(us[0-9]+\): .+'
+
+if ! printf '%s\n' "$subject_line" | grep -Eq "$pattern"; then
+  echo "Invalid commit message: '$subject_line'"
+  echo "Use: <command>(us[0-9]*): text"
+  echo "Example: feat(us3): add CI workflow"
+  exit 1
+fi

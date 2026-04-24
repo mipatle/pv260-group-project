@@ -52,3 +52,13 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+#Idea
+.idea
+*.user
+*.DotSettings.user
+
+# Environment files
+.env
+.env.*
+!.env.example

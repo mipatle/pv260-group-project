@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+set -eu
+
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+DOTNET_CMD="$($SCRIPT_DIR/_dotnet_cmd.sh)"
+
+echo "Running tests before push..."
+"$DOTNET_CMD" test PV260.ArkFundsTracker.sln --configuration Release --nologo
