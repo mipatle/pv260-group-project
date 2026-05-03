@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
+using PV260.ArkFundsTracker.Web.Slices.Authentication;
 using PV260.ArkFundsTracker.Web.Slices.Authentication.Entities;
 using PV260.ArkFundsTracker.Web.Slices.Authentication.ViewModels;
 
@@ -25,7 +26,8 @@ public class AuthService(
         var user = new AppUser
         {
             Email = normalizedEmail,
-            PasswordHash = string.Empty
+            PasswordHash = string.Empty,
+            Role = AuthenticationConstants.RoleUser
         };
 
         user.PasswordHash = passwordHasher.HashPassword(user, model.Password);

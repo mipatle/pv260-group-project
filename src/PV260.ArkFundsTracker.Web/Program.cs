@@ -1,11 +1,16 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Infrastructure.DependencyInjection;
+using PV260.ArkFundsTracker.Web.Slices.Authentication;
+using PV260.ArkFundsTracker.Web.Slices.Authentication.Entities;
+using PV260.ArkFundsTracker.Web.Slices.Authentication.Services;
 using PV260.ArkFundsTracker.Web.Slices.CronFetching;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition.Validators;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare;
+using PV260.ArkFundsTracker.Web.Infrastructure.Data.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 const string errorPath = "/home/error";
@@ -21,12 +26,27 @@ if (builder.Environment.IsDevelopment())
 builder.Services
     .AddWebPresentation()
     .AddApplicationOptions(builder.Configuration)
+    .Configure<AdminUserOptions>(builder.Configuration.GetSection("AdminUser"))
     .AddScoped<FundPositionsService>()
     .AddScoped<IFundPositionValidator, FundPositionValidator>()
     .AddScoped<TimestampNavService>()
     .AddScoped<TimestampCompareService>()
     .AddHttpClient()
-    .AddHostedService<CronJob>();
+    .AddHostedService<CronJob>()
+    .AddScoped<AuthService>()
+    .AddScoped<AdminUserSeeder>()
+    .AddScoped<PasswordHasher<AppUser>>();
+
+builder.Services
+    .AddAuthentication(AuthenticationConstants.AuthenticationScheme)
+    .AddCookie(AuthenticationConstants.AuthenticationScheme, options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+        options.AccessDeniedPath = "/Auth/Login";
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -43,6 +63,9 @@ var app = builder.Build();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 
+    var seeder = scope.ServiceProvider.GetRequiredService<AdminUserSeeder>();
+    await seeder.SeedAsync();
+
     app.UseExceptionHandler(errorPath);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
@@ -51,7 +74,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

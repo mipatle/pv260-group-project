@@ -9,4 +9,6 @@ public class AppUser
     public required string PasswordHash { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+	public required string Role { get; set; }
 }

@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using System.Globalization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +10,6 @@ namespace PV260.ArkFundsTracker.Web.Slices.Authentication;
 
 public class AuthController(AuthService authService) : Controller
 {
-    private const string AuthenticationScheme = "AppCookie";
-
     [HttpGet]
     [AllowAnonymous]
     public IActionResult Register()
@@ -69,13 +67,19 @@ public class AuthController(AuthService authService) : Controller
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture)),
             new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.Name, user.Email)
+            new(ClaimTypes.Name, user.Email),
+            new(ClaimTypes.Role, user.Role)
         };
 
-        var identity = new ClaimsIdentity(claims, AuthenticationScheme);
+        var identity = new ClaimsIdentity(
+            claims,
+            AuthenticationConstants.AuthenticationScheme);
+
         var principal = new ClaimsPrincipal(identity);
 
-        await HttpContext.SignInAsync(AuthenticationScheme, principal);
+        await HttpContext.SignInAsync(
+            AuthenticationConstants.AuthenticationScheme,
+            principal);
 
         return RedirectToAction("Index", "Home");
     }
@@ -85,7 +89,7 @@ public class AuthController(AuthService authService) : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync(AuthenticationScheme);
+        await HttpContext.SignOutAsync(AuthenticationConstants.AuthenticationScheme);
 
         return RedirectToAction("Index", "Home");
     }
