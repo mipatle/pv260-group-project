@@ -1,4 +1,4 @@
-namespace PV260.ArkFundsTracker.Web.Slices.Authentication.Entities;
+namespace PV260.ArkFundsTracker.Web.Slices.Auth.Entities;
 
 public class AppUser
 {

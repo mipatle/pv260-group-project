@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
-using PV260.ArkFundsTracker.Web.Slices.Authentication;
-using PV260.ArkFundsTracker.Web.Slices.Authentication.Entities;
+using PV260.ArkFundsTracker.Web.Slices.Auth;
+using PV260.ArkFundsTracker.Web.Slices.Auth.Entities;
 
 namespace PV260.ArkFundsTracker.Web.Infrastructure.Data.Seeding;
 

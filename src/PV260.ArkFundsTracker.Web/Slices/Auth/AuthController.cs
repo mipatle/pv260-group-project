@@ -3,10 +3,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PV260.ArkFundsTracker.Web.Slices.Authentication.Services;
-using PV260.ArkFundsTracker.Web.Slices.Authentication.ViewModels;
+using PV260.ArkFundsTracker.Web.Slices.Auth.Services;
+using PV260.ArkFundsTracker.Web.Slices.Auth.ViewModels;
 
-namespace PV260.ArkFundsTracker.Web.Slices.Authentication;
+namespace PV260.ArkFundsTracker.Web.Slices.Auth;
 
 public class AuthController(AuthService authService) : Controller
 {

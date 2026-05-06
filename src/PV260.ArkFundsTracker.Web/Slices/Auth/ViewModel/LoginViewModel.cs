@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace PV260.ArkFundsTracker.Web.Slices.Authentication.ViewModels;
+namespace PV260.ArkFundsTracker.Web.Slices.Auth.ViewModels;
 
 public class LoginViewModel
 {

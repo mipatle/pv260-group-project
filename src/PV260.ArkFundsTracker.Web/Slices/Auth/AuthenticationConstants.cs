@@ -1,4 +1,4 @@
-namespace PV260.ArkFundsTracker.Web.Slices.Authentication;
+namespace PV260.ArkFundsTracker.Web.Slices.Auth;
 
 public static class AuthenticationConstants
 {

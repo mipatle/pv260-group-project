@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PV260.ArkFundsTracker.Web.Slices.Authentication.Entities;
+using PV260.ArkFundsTracker.Web.Slices.Auth.Entities;
 
 namespace PV260.ArkFundsTracker.Web.Infrastructure.Data.Configuration;
 

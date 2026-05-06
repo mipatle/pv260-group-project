@@ -12,8 +12,8 @@ using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 namespace PV260.ArkFundsTracker.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260503145107_AddUserRoles")]
-    partial class AddUserRoles
+    [Migration("20260505164559_AddAppUsers")]
+    partial class AddAppUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace PV260.ArkFundsTracker.Web.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("PV260.ArkFundsTracker.Web.Slices.Authentication.Entities.AppUser", b =>
+            modelBuilder.Entity("PV260.ArkFundsTracker.Web.Slices.Auth.Entities.AppUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

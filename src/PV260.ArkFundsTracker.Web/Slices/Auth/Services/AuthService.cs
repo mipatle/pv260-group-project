@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
-using PV260.ArkFundsTracker.Web.Slices.Authentication;
-using PV260.ArkFundsTracker.Web.Slices.Authentication.Entities;
-using PV260.ArkFundsTracker.Web.Slices.Authentication.ViewModels;
+using PV260.ArkFundsTracker.Web.Slices.Auth;
+using PV260.ArkFundsTracker.Web.Slices.Auth.Entities;
+using PV260.ArkFundsTracker.Web.Slices.Auth.ViewModels;
 
-namespace PV260.ArkFundsTracker.Web.Slices.Authentication.Services;
+namespace PV260.ArkFundsTracker.Web.Slices.Auth.Services;
 
 public class AuthService(
     AppDbContext db,
@@ -33,7 +34,15 @@ public class AuthService(
         user.PasswordHash = passwordHasher.HashPassword(user, model.Password);
 
         db.Users.Add(user);
-        await db.SaveChangesAsync(ct);
+
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException ex) when (IsUniqueConstraintViolation(ex))
+        {
+            return null;
+        }
 
         return user;
     }
@@ -61,5 +70,11 @@ public class AuthService(
         }
 
         return user;
+    }
+
+    private static bool IsUniqueConstraintViolation(DbUpdateException ex)
+    {
+        return ex.InnerException is PostgresException postgresException
+               && postgresException.SqlState == PostgresErrorCodes.UniqueViolation;
     }
 }

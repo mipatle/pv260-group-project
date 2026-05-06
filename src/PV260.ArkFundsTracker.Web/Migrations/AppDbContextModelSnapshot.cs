@@ -22,7 +22,7 @@ namespace PV260.ArkFundsTracker.Web.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("PV260.ArkFundsTracker.Web.Slices.Authentication.Entities.AppUser", b =>
+            modelBuilder.Entity("PV260.ArkFundsTracker.Web.Slices.Auth.Entities.AppUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data.Seeding;
-using PV260.ArkFundsTracker.Web.Slices.Authentication.Entities;
+using PV260.ArkFundsTracker.Web.Slices.Auth.Entities;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
 namespace PV260.ArkFundsTracker.Web.Infrastructure.Data;
