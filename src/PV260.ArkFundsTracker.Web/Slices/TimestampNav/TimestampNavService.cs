@@ -22,30 +22,15 @@ public class TimestampNavService(
         }
 
         var finalFirstDate = firstDate ?? dateList[1];
-        try
-        {
-            var timestampCompareList = await timestampCompareService.FillComparedPositionsList(finalFirstDate, ct);
-            var sortedTimestampCompareList = timestampCompareList
-                .OrderBy(x => x.PositionState).ThenByDescending(y => Math.Abs(y.SharesDifferencePercentage)).ToList();
+        var timestampCompareList = await timestampCompareService.FillComparedPositionsList(finalFirstDate, ct);
+        var sortedTimestampCompareList = timestampCompareList
+            .OrderBy(x => x.PositionState).ThenByDescending(y => Math.Abs(y.SharesDifferencePercentage)).ToList();
 
-            return new TimestampNavViewModel
-            {
-                SelectedDate = finalFirstDate,
-                DateList = dateList,
-                ComparedPositions = sortedTimestampCompareList
-            };
-        }
-        catch (OperationCanceledException ex)
+        return new TimestampNavViewModel
         {
-            throw new OperationCanceledException("In compare service: " + ex.Message);
-        }
-        catch (DataWithWrongValueException ex)
-        {
-            throw new DataWithWrongValueException("In compare service: " + ex.Message);
-        }
-        catch (Exception ex)
-        {
-            throw new DataWithWrongValueException("In compare service: " + ex.Message);
-        }
+            SelectedDate = finalFirstDate,
+            DateList = dateList,
+            ComparedPositions = sortedTimestampCompareList
+        };
     }
 }

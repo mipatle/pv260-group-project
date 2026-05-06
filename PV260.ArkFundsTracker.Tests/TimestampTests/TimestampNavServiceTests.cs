@@ -4,7 +4,7 @@ using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare;
 
-namespace PV260.ArkFundsTracker.Tests.TimestampNavTests;
+namespace PV260.ArkFundsTracker.Tests.TimestampTests;
 
 public class TimestampNavServiceTests
 {

@@ -4,7 +4,7 @@ using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare;
 
-namespace PV260.ArkFundsTracker.Tests.TimestampNavTests;
+namespace PV260.ArkFundsTracker.Tests.TimestampTests;
 
 public class TimestampCompareServiceTests
 {
@@ -25,7 +25,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var nvda = Assert.Single(result, x => x.LastPosition?.Ticker == "NVDA");
         Assert.Equal(TimestampComparePositionState.New, nvda.PositionState);
@@ -51,7 +51,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var roku = Assert.Single(result, x => x.FirstPosition?.Ticker == "ROKU");
         Assert.Equal(TimestampComparePositionState.Sold, roku.PositionState);
@@ -76,7 +76,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(TimestampComparePositionState.Same, tsla.PositionState);
@@ -99,7 +99,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(TimestampComparePositionState.Increased, tsla.PositionState);
@@ -122,7 +122,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(TimestampComparePositionState.Reduced, tsla.PositionState);
@@ -146,7 +146,7 @@ public class TimestampCompareServiceTests
         var service = new TimestampCompareService(dbContext);
 
         var exception = await Assert.ThrowsAsync<DataWithWrongValueException>(() =>
-            service.FillComparedPositionsList(firstDate));
+            service.FillComparedPositionsList(firstDate, CancellationToken.None));
 
         Assert.Equal("Shares of specific position can't be zero.", exception.Message);
     }
@@ -169,7 +169,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(50, tsla.SharesDifferencePercentage);
@@ -195,7 +195,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(20, tsla.SharesDifferencePercentage);
