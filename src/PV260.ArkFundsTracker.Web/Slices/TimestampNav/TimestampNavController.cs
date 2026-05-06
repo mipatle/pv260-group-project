@@ -2,19 +2,29 @@
 
 namespace PV260.ArkFundsTracker.Web.Slices.TimestampNav;
 
-public class TimestampNavController : Controller
+public class TimestampNavController(TimestampNavService timestampNavService) : Controller
 {
-    private readonly TimestampNavService _timestampNavService;
-
-    public TimestampNavController(TimestampNavService timestampNavService)
-    {
-        _timestampNavService = timestampNavService;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Index(DateOnly? firstDate)
     {
-        var viewModel = await _timestampNavService.FillTimestampNavViewModel(firstDate);
-        return View(viewModel);
+        try
+        {
+            var viewModel = await timestampNavService.FillTimestampNavViewModel(firstDate, HttpContext.RequestAborted);
+            return View(viewModel);
+        }
+        catch (OperationCanceledException)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+        catch (DataWithWrongValueException ex)
+        {
+            TempData["ErrorMessage"] = "Fetched data has wrong values:" + ex.Message;
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = "Unexpected exception happened: " + ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
     }
 }

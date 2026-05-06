@@ -3,19 +3,13 @@ using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 
 namespace PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare;
 
-public class TimestampCompareService
+public class TimestampCompareService(
+    AppDbContext db)
 {
-    private readonly AppDbContext _db;
-
-    public TimestampCompareService(AppDbContext db)
+    public async Task<List<TimestampCompareDto>> FillComparedPositionsList(DateOnly firstDate, CancellationToken ct)
     {
-        _db = db;
-    }
-
-    public async Task<List<TimestampCompareDto>> FillComparedPositionsList(DateOnly firstDate)
-    {
-        var firstPositionsList = await FetchFundPositionList(firstDate);
-        var lastPositionsList = await FetchFundPositionList(await GetLastPositionDate());
+        var firstPositionsList = await FetchFundPositionList(firstDate, ct);
+        var lastPositionsList = await FetchFundPositionList(await GetLastPositionDate(ct), ct);
 
         var firstDict = firstPositionsList
             .GroupBy(x => (x.Ticker, x.Company))
@@ -40,9 +34,9 @@ public class TimestampCompareService
         ];
     }
 
-    private async Task<DateOnly> GetLastPositionDate()
+    private async Task<DateOnly> GetLastPositionDate(CancellationToken ct)
     {
-        return await _db.FundPositions.MaxAsync(x => x.Date);
+        return await db.FundPositions.MaxAsync(x => x.Date, ct);
     }
 
     private static TimestampCompareDto ComparePositions(
@@ -52,17 +46,17 @@ public class TimestampCompareService
     {
         if (firstPosition == null)
         {
-            return FetchTimestampCompare(firstPosition, lastPosition, 0, TimestampComparePositionState.New);
+            return FillTimestampCompareDto(firstPosition, lastPosition, 0, TimestampComparePositionState.New);
         }
 
         if (lastPosition == null)
         {
-            return FetchTimestampCompare(firstPosition, lastPosition, -100, TimestampComparePositionState.Sold);
+            return FillTimestampCompareDto(firstPosition, lastPosition, -100, TimestampComparePositionState.Sold);
         }
 
         if (firstPosition.Shares == lastPosition.Shares)
         {
-            return FetchTimestampCompare(firstPosition, lastPosition, 0, TimestampComparePositionState.Same);
+            return FillTimestampCompareDto(firstPosition, lastPosition, 0, TimestampComparePositionState.Same);
         }
 
         if (firstPosition.Shares == 0)
@@ -75,10 +69,10 @@ public class TimestampCompareService
             ? TimestampComparePositionState.Increased
             : TimestampComparePositionState.Reduced;
 
-        return FetchTimestampCompare(firstPosition, lastPosition, sharesDiff, positionState);
+        return FillTimestampCompareDto(firstPosition, lastPosition, sharesDiff, positionState);
     }
 
-    private static TimestampCompareDto FetchTimestampCompare(TimestampNavPositionDto? firstPosition,
+    private static TimestampCompareDto FillTimestampCompareDto(TimestampNavPositionDto? firstPosition,
         TimestampNavPositionDto? lastPosition, decimal sharesDiff, TimestampComparePositionState positionState)
     {
         return new TimestampCompareDto
@@ -90,9 +84,9 @@ public class TimestampCompareService
         };
     }
 
-    private async Task<List<TimestampNavPositionDto>> FetchFundPositionList(DateOnly date)
+    private async Task<List<TimestampNavPositionDto>> FetchFundPositionList(DateOnly date, CancellationToken ct)
     {
-        return await _db.FundPositions
+        return await db.FundPositions
             .Select(x => new TimestampNavPositionDto
             {
                 Date = new DateOnly(x.Date.Year, x.Date.Month, x.Date.Day),
@@ -102,6 +96,6 @@ public class TimestampCompareService
                 WeightPercentage = x.WeightPercentage
             })
             .Where(x => x.Date == date)
-            .ToListAsync();
+            .ToListAsync(ct);
     }
 }
