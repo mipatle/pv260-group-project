@@ -11,6 +11,9 @@ on:
       - .gitignore
       - .git/**
   push:
+    branches:
+      - main
+      - 'milestone-*'
     paths-ignore:
       - doc/**
       - README.md
