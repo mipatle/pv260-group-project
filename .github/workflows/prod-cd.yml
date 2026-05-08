@@ -7,13 +7,15 @@ on:
       - 'milestone-*'
     tags:
       - 'release-*'
+  workflow_call:
+  workflow_dispatch:
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   DOTNET_VERSION: '10.0.x'
 
 concurrency:
-  group: cd-production
+  group: cd-production-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
