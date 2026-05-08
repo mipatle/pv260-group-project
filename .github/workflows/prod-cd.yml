@@ -15,7 +15,7 @@ env:
   DOTNET_VERSION: '10.0.x'
 
 concurrency:
-  group: cd-production-${{ github.event.pull_request.number || github.ref }}
+  group: cd-production-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -46,6 +46,12 @@ jobs:
         run: |
           cd ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp
           zip -r ../app.zip .
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_PROD }}
+        continue-on-error: true
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
