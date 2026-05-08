@@ -212,6 +212,85 @@ inside the Docker network.
 
 ---
 
+## Continuous Deployment
+
+The repository now uses separate CD workflows in `.github/workflows/`:
+
+- `dev-cd.yml` deploys to the development Azure App Service after **any successful CI run**.
+- `prod-cd.yml` deploys to the production Azure App Service on pushes to `main` and `milestone-*`, and on tags matching `release-*`.
+
+For step-by-step deployment instructions, see [`doc/deployment-guide.md`](doc/deployment-guide.md).
+
+### Health check
+
+The app exposes a readiness endpoint at `/health`.
+
+- It returns `200 OK` when the application can connect to the configured PostgreSQL database.
+- It returns `503 Service Unavailable` when the database dependency is not reachable.
+
+### Azure environment settings
+
+Use GitHub Environments and repository variables/secrets for each deployment target:
+
+- `AZURE_WEBAPP_NAME_DEV` / `AZURE_WEBAPP_NAME_PROD`
+- `AZURE_RESOURCE_GROUP_DEV` / `AZURE_RESOURCE_GROUP_PROD`
+- `AZURE_CREDENTIALS_DEV` / `AZURE_CREDENTIALS_PROD`
+
+Terraform now manages `ASPNETCORE_ENVIRONMENT`, `ConnectionStrings__Default`, and `WEBSITE_HEALTHCHECK_PATH=/health` in Azure App Service, so the CD workflows only deploy the package.
+
+## Terraform Infrastructure
+
+Azure deployment infrastructure is defined in `infra/terraform/`.
+
+It provisions one environment per Terraform run, selected by the `environment` value in `tfvars`.
+
+Resources include:
+
+- Azure Resource Group
+- Azure App Service Plan
+- Azure Linux Web App
+- Azure Database for PostgreSQL Flexible Server
+- Log Analytics Workspace
+- Application Insights
+
+Default Terraform settings are now aligned to the lowest practical tier for the app:
+
+- Azure region: `germanywestcentral`
+- App Service plan: `B1`
+- PostgreSQL Flexible Server: `B_Standard_B1ms`
+- PostgreSQL version: `18`
+
+You can still override these values in the selected `tfvars` file when you need to target a different region or tier.
+
+### Files
+
+- `infra/terraform/main.tf` – root module wiring for the selected environment
+- `infra/terraform/modules/webapp-postgres/` – reusable module for one environment
+- `infra/terraform/terraform.tfvars.example` – development template with commented overrides
+- `infra/terraform/terraform.prod.tfvars.example` – production template with commented overrides
+
+### Example workflow
+
+```powershell
+az login
+
+Copy-Item .\terraform.tfvars.example .\terraform.tfvars -Force
+terraform init
+terraform plan --var-file=terraform.tfvars
+terraform apply --var-file=terraform.tfvars
+```
+
+### Notes
+
+- Use a unique `name_prefix` so your Azure resource names do not collide with other subscriptions.
+- The tfvars templates are intentionally small: set `environment`, then add only the overrides you need.
+- The App Service is configured with `ASPNETCORE_ENVIRONMENT`, `ConnectionStrings__Default`, and `WEBSITE_HEALTHCHECK_PATH=/health`.
+- Azure PostgreSQL Flexible Server always uses backups; this setup keeps the retention at the minimum supported 7 days.
+- The `/health` endpoint is a readiness check that verifies database connectivity before returning `200 OK`.
+- Keep one state file per environment; do not let development and production share the same Terraform state.
+
+---
+
 ## Testing
 
 Project includes automated tests for ingestion and audit logic.

@@ -91,15 +91,19 @@ else
                 <td class="@color"><strong>@pos.FirstPosition?.Ticker</strong></td>
                 <td class="@color">@pos.FirstPosition?.Company</td>
                 <td class="text-end @color">@pos.FirstPosition?.Shares.ToString("F0")</td>
-                <td class="text-end @color">@((pos.FirstPosition?.WeightPercentage == null
+                <td class="text-end @color">
+                    @(pos.FirstPosition?.WeightPercentage == null
                         ? ""
-                        : pos.FirstPosition.WeightPercentage.ToString("F2") + "%"))</td>
+                        : pos.FirstPosition.WeightPercentage.ToString("F2") + "%")
+                </td>
                 <td class="@color"><strong>@pos.LastPosition?.Ticker</strong></td>
                 <td class="@color">@pos.LastPosition?.Company</td>
                 <td class="text-end @color">@pos.LastPosition?.Shares.ToString("F0")</td>
-                <td class="text-end @color">@((pos.LastPosition?.WeightPercentage == null
+                <td class="text-end @color">
+                    @(pos.LastPosition?.WeightPercentage == null
                         ? ""
-                        : pos.LastPosition.WeightPercentage.ToString("F2") + "%"))</td>
+                        : pos.LastPosition.WeightPercentage.ToString("F2") + "%")
+                </td>
                 <td class="text-end fw-bold @color 
                     @(pos.SharesDifferencePercentage <= 0 || pos.PositionState == TimestampComparePositionState.Sold
                                                                           ? "text-danger"

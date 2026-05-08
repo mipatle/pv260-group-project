@@ -62,3 +62,15 @@ nunit-*.xml
 .env
 .env.*
 !.env.example
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfvars
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

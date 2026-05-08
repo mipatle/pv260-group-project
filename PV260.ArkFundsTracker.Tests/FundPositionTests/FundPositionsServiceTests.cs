@@ -16,7 +16,8 @@ public class FundPositionsServiceTests
         var selectedDate = new DateOnly(2026, 4, 20);
         var otherDate = new DateOnly(2026, 4, 19);
 
-        await using var dbContext = CreateInMemoryDbContext(nameof(GetHistory_WhenMatchingDateExists_ReturnsPositionsForThatDate));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(GetHistory_WhenMatchingDateExists_ReturnsPositionsForThatDate));
 
         await dbContext.FundPositions.AddRangeAsync(
             CreateFundPosition(selectedDate, "TSLA"),
@@ -53,11 +54,12 @@ public class FundPositionsServiceTests
     {
         var selectedDate = new DateOnly(2026, 4, 20);
 
-        await using var dbContext = CreateInMemoryDbContext(nameof(GetHistory_WhenSoftDeletedPositionsExist_DoesNotReturnThem));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(GetHistory_WhenSoftDeletedPositionsExist_DoesNotReturnThem));
 
         await dbContext.FundPositions.AddRangeAsync(
             CreateFundPosition(selectedDate, "TSLA"),
-            CreateFundPosition(selectedDate, "COIN", deletedAt: DateTime.UtcNow));
+            CreateFundPosition(selectedDate, "COIN", DateTime.UtcNow));
 
         await dbContext.SaveChangesAsync();
 
@@ -73,7 +75,8 @@ public class FundPositionsServiceTests
     [Fact]
     public async Task FetchAndSaveLatest_WhenHttpRequestFails_ThrowsDataUnavailableException()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenHttpRequestFails_ThrowsDataUnavailableException));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenHttpRequestFails_ThrowsDataUnavailableException));
 
         var service = CreateService(
             dbContext,
@@ -85,7 +88,9 @@ public class FundPositionsServiceTests
     [Fact]
     public async Task FetchAndSaveLatest_WhenResponseContainsNoPositions_ThrowsDataInconsistentException()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenResponseContainsNoPositions_ThrowsDataInconsistentException));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FetchAndSaveLatest_WhenResponseContainsNoPositions_ThrowsDataInconsistentException));
 
         var csv = CreateArkCsv();
         var service = CreateService(dbContext, csv);
@@ -98,7 +103,8 @@ public class FundPositionsServiceTests
     [Fact]
     public async Task FetchAndSaveLatest_WhenCsvDateIsNotToday_ThrowsDataNotLatestException()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenCsvDateIsNotToday_ThrowsDataNotLatestException));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenCsvDateIsNotToday_ThrowsDataNotLatestException));
 
         var yesterday = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
         var csv = CreateArkCsv(
@@ -112,7 +118,9 @@ public class FundPositionsServiceTests
     [Fact]
     public async Task FetchAndSaveLatest_WhenCsvContainsMultipleDates_ThrowsDataInconsistentException()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenCsvContainsMultipleDates_ThrowsDataInconsistentException));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FetchAndSaveLatest_WhenCsvContainsMultipleDates_ThrowsDataInconsistentException));
 
         var today = DateOnly.FromDateTime(DateTime.Today);
         var yesterday = today.AddDays(-1);
@@ -131,7 +139,8 @@ public class FundPositionsServiceTests
     [Fact]
     public async Task FetchAndSaveLatest_WhenCsvIsMalformed_ThrowsDataInconsistentException()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenCsvIsMalformed_ThrowsDataInconsistentException));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenCsvIsMalformed_ThrowsDataInconsistentException));
 
         var malformedCsv = """
                            date,fund,ticker,company,cusip,shares,market value ($),weight (%)
@@ -156,7 +165,7 @@ public class FundPositionsServiceTests
             CreateCsvRow(today, "COIN", "Coinbase Global Inc.", "987654321", 50, 500, 5));
 
         var validator = new TrackingFundPositionValidator();
-        var service = CreateService(dbContext, csv, validator: validator);
+        var service = CreateService(dbContext, csv, validator);
 
         await service.FetchAndSaveLatest();
 
@@ -178,7 +187,7 @@ public class FundPositionsServiceTests
             CreateCsvRow(today, "TSLA", "Tesla Inc.", "123456789", 100, 1000, 10),
             CreateCsvRow(today, "COIN", "Coinbase Global Inc.", "987654321", 50, 500, 5));
 
-        var service = CreateService(dbContext, csv, validator: new ThrowingFundPositionValidator());
+        var service = CreateService(dbContext, csv, new ThrowingFundPositionValidator());
 
         await Assert.ThrowsAsync<DataInconsistentException>(() => service.FetchAndSaveLatest());
 
@@ -204,7 +213,7 @@ public class FundPositionsServiceTests
 
         var service = CreateService(dbContext, csv);
 
-        var result = await service.FetchAndSaveLatest(adminId: 42);
+        var result = await service.FetchAndSaveLatest(42);
 
         Assert.Equal(2, result.Count);
         Assert.All(result, position =>
@@ -247,7 +256,7 @@ public class FundPositionsServiceTests
 
         var service = CreateService(dbContext, csv);
 
-        var result = await service.FetchAndSaveLatest(adminId: 7);
+        var result = await service.FetchAndSaveLatest(7);
 
         Assert.Equal(2, result.Count);
         Assert.All(result, position => Assert.Null(position.DeletedAt));
@@ -280,7 +289,9 @@ public class FundPositionsServiceTests
     [Fact]
     public async Task FetchAndSaveLatest_WhenCancellationIsRequested_ThrowsOperationCanceledException()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FetchAndSaveLatest_WhenCancellationIsRequested_ThrowsOperationCanceledException));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FetchAndSaveLatest_WhenCancellationIsRequested_ThrowsOperationCanceledException));
 
         var today = DateOnly.FromDateTime(DateTime.Today);
         var csv = CreateArkCsv(
