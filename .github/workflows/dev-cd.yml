@@ -14,7 +14,7 @@ env:
   DOTNET_VERSION: '10.0.x'
 
 concurrency:
-  group: cd-development-${{ github.ref }}
+  group: cd-development-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
