@@ -1,6 +1,6 @@
 services:
   db:
-    image: ${POSTGRES_IMAGE:-postgres:17}
+    image: ${POSTGRES_IMAGE:-postgres:18}
     container_name: arkfunds_db
     restart: always
     environment:

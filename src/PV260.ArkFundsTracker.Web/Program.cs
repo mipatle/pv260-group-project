@@ -26,7 +26,9 @@ builder.Services
     .AddScoped<TimestampNavService>()
     .AddScoped<TimestampCompareService>()
     .AddHttpClient()
-    .AddHostedService<CronJob>();
+    .AddHostedService<CronJob>()
+    .AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>();
 
 var app = builder.Build();
 
@@ -51,6 +53,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.MapHealthChecks("/health");
 
 app.UseAuthorization();
 

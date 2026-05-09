@@ -11,7 +11,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenTickerExistsOnlyInLatestSnapshot_ReturnsNewState()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenTickerExistsOnlyInLatestSnapshot_ReturnsNewState));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenTickerExistsOnlyInLatestSnapshot_ReturnsNewState));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -37,7 +39,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenTickerExistsOnlyInFirstSnapshot_ReturnsSoldState()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenTickerExistsOnlyInFirstSnapshot_ReturnsSoldState));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenTickerExistsOnlyInFirstSnapshot_ReturnsSoldState));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -63,7 +67,8 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenSharesAreEqual_ReturnsSameState()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenSharesAreEqual_ReturnsSameState));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenSharesAreEqual_ReturnsSameState));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -86,7 +91,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenSharesIncrease_ReturnsIncreasedStateAndCorrectPercentage()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenSharesIncrease_ReturnsIncreasedStateAndCorrectPercentage));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenSharesIncrease_ReturnsIncreasedStateAndCorrectPercentage));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -109,7 +116,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenSharesDecrease_ReturnsReducedStateAndCorrectPercentage()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenSharesDecrease_ReturnsReducedStateAndCorrectPercentage));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenSharesDecrease_ReturnsReducedStateAndCorrectPercentage));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -132,7 +141,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenFirstSharesAreZero_ThrowsDataWithWrongValueException()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenFirstSharesAreZero_ThrowsDataWithWrongValueException));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenFirstSharesAreZero_ThrowsDataWithWrongValueException));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -154,7 +165,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenMultipleSnapshotsExist_AlwaysComparesAgainstLatestDate()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenMultipleSnapshotsExist_AlwaysComparesAgainstLatestDate));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenMultipleSnapshotsExist_AlwaysComparesAgainstLatestDate));
 
         var firstDate = new DateOnly(2026, 4, 19);
         var middleDate = new DateOnly(2026, 4, 20);

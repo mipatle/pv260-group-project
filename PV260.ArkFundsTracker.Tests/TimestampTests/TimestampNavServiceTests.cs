@@ -11,7 +11,9 @@ public class TimestampNavServiceTests
     [Fact]
     public async Task FillTimestampNavViewModel_WhenLessThanTwoDatesExist_ThrowsDataWithWrongValueException()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillTimestampNavViewModel_WhenLessThanTwoDatesExist_ThrowsDataWithWrongValueException));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillTimestampNavViewModel_WhenLessThanTwoDatesExist_ThrowsDataWithWrongValueException));
 
         var onlyDate = new DateOnly(2026, 4, 21);
         await dbContext.FundPositions.AddAsync(CreateFundPosition(onlyDate, "TSLA", "Tesla", 100));
@@ -29,7 +31,8 @@ public class TimestampNavServiceTests
     [Fact]
     public async Task FillTimestampNavViewModel_WhenDateIsNotProvided_UsesSecondNewestDate()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillTimestampNavViewModel_WhenDateIsNotProvided_UsesSecondNewestDate));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(FillTimestampNavViewModel_WhenDateIsNotProvided_UsesSecondNewestDate));
 
         var oldest = new DateOnly(2026, 4, 19);
         var middle = new DateOnly(2026, 4, 20);
@@ -53,7 +56,8 @@ public class TimestampNavServiceTests
     [Fact]
     public async Task FillTimestampNavViewModel_WhenDateIsProvided_UsesProvidedDate()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillTimestampNavViewModel_WhenDateIsProvided_UsesProvidedDate));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(FillTimestampNavViewModel_WhenDateIsProvided_UsesProvidedDate));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -75,7 +79,8 @@ public class TimestampNavServiceTests
     [Fact]
     public async Task FillTimestampNavViewModel_WhenDatesExist_ReturnsDateListSortedDescending()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillTimestampNavViewModel_WhenDatesExist_ReturnsDateListSortedDescending));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(FillTimestampNavViewModel_WhenDatesExist_ReturnsDateListSortedDescending));
 
         var d1 = new DateOnly(2026, 4, 19);
         var d2 = new DateOnly(2026, 4, 20);
@@ -97,9 +102,12 @@ public class TimestampNavServiceTests
     }
 
     [Fact]
-    public async Task FillTimestampNavViewModel_WhenComparedPositionsAreReturned_SortsByStateThenByAbsolutePercentageDescending()
+    public async Task
+        FillTimestampNavViewModel_WhenComparedPositionsAreReturned_SortsByStateThenByAbsolutePercentageDescending()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillTimestampNavViewModel_WhenComparedPositionsAreReturned_SortsByStateThenByAbsolutePercentageDescending));
+        await using var dbContext = CreateInMemoryDbContext(
+            nameof(
+                FillTimestampNavViewModel_WhenComparedPositionsAreReturned_SortsByStateThenByAbsolutePercentageDescending));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -109,11 +117,10 @@ public class TimestampNavServiceTests
             CreateFundPosition(firstDate, "MSFT", "Microsoft", 200),
             CreateFundPosition(firstDate, "TSLA", "Tesla", 100),
             CreateFundPosition(firstDate, "ROKU", "Roku", 100),
-
-            CreateFundPosition(latestDate, "AAPL", "Apple", 150),   // Increased +50
+            CreateFundPosition(latestDate, "AAPL", "Apple", 150), // Increased +50
             CreateFundPosition(latestDate, "MSFT", "Microsoft", 50), // Reduced -75
-            CreateFundPosition(latestDate, "TSLA", "Tesla", 100),    // Same 0
-            CreateFundPosition(latestDate, "NVDA", "Nvidia", 70)     // New 0
+            CreateFundPosition(latestDate, "TSLA", "Tesla", 100), // Same 0
+            CreateFundPosition(latestDate, "NVDA", "Nvidia", 70) // New 0
         );
 
         await dbContext.SaveChangesAsync();

@@ -15,7 +15,8 @@ public static class FundPositionTestFactory
         return results;
     }
 
-    public static List<ValidationResult> ValidatePosition(string ticker = "ARKK", decimal shares = 1m, DateOnly? date = null,
+    public static List<ValidationResult> ValidatePosition(string ticker = "ARKK", decimal shares = 1m,
+        DateOnly? date = null,
         decimal marketValue = 1,
         decimal weightPercentage = 1)
     {
