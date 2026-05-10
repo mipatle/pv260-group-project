@@ -4,23 +4,17 @@ using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare;
 
 namespace PV260.ArkFundsTracker.Web.Slices.TimestampNav;
 
-public class TimestampNavService
+public class TimestampNavService(
+    AppDbContext db,
+    TimestampCompareService timestampCompareService)
 {
-    private readonly AppDbContext _db;
-    private readonly TimestampCompareService _timestampCompareService;
-
-    public TimestampNavService(AppDbContext db, TimestampCompareService timestampCompareService)
+    public async Task<TimestampNavViewModel> FillTimestampNavViewModel(DateOnly? firstDate,
+        CancellationToken ct = default)
     {
-        _db = db;
-        _timestampCompareService = timestampCompareService;
-    }
-
-    public async Task<TimestampNavViewModel> FillTimestampNavViewModel(DateOnly? firstDate)
-    {
-        var dateList = await _db.FundPositions.Select(x => x.Date)
+        var dateList = await db.FundPositions.Select(x => x.Date)
             .Distinct()
             .OrderByDescending(x => x)
-            .ToListAsync();
+            .ToListAsync(ct);
 
         if (dateList.Count <= 1)
         {
@@ -28,7 +22,7 @@ public class TimestampNavService
         }
 
         var finalFirstDate = firstDate ?? dateList[1];
-        var timestampCompareList = await _timestampCompareService.FillComparedPositionsList(finalFirstDate);
+        var timestampCompareList = await timestampCompareService.FillComparedPositionsList(finalFirstDate, ct);
         var sortedTimestampCompareList = timestampCompareList
             .OrderBy(x => x.PositionState).ThenByDescending(y => Math.Abs(y.SharesDifferencePercentage)).ToList();
 
