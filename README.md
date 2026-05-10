@@ -152,6 +152,19 @@ Set runtime environment with:
 
 ---
 
+### Admin User Seeding
+
+The application can seed an initial admin user on startup, but only when the `AdminUser` configuration section is provided.
+
+For local development, configure the admin user using user secrets:
+
+    dotnet user-secrets set "AdminUser:Email" "admin@example.com" --project src/PV260.ArkFundsTracker.Web
+    dotnet user-secrets set "AdminUser:Password" "Admin123" --project src/PV260.ArkFundsTracker.Web
+
+After starting the application, the admin user will be created automatically if it does not already exist.
+
+Do not store admin credentials in `appsettings.json`.
+
 ### Run Locally
 
 Local non-Docker options:
