@@ -36,8 +36,9 @@ builder.Services
     .AddScoped<AuthService>()
     .AddScoped<AdminUserSeeder>()
     .AddHealthChecks()
-    .AddDbContextCheck<AppDbContext>()
-    .AddScoped<PasswordHasher<AppUser>>();
+    .AddDbContextCheck<AppDbContext>();
+
+builder.Services.AddScoped<PasswordHasher<AppUser>>();
 
 builder.Services
     .AddAuthentication(AuthenticationConstants.AuthenticationScheme)
