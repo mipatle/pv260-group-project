@@ -2,21 +2,32 @@
 @using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare
 @model PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampNavViewModel
 
+@{
+    var hasDates = Model.DateList.Any();
+}
 <div class="mb-4 d-flex align-items-end">
     <form asp-action="Index" method="get" class="d-inline ms-3">
         <div class="input-group">
             <select name="firstDate" class="form-select">
-                @foreach (var date in Model.DateList.Where(date => date != Model.DateList.First()))
+                @if (hasDates)
                 {
-                    <option value="@date.ToString("yyyy-MM-dd")"
-                            selected="@(date == @Model.SelectedDate)">
-                        @date.ToString("dd.MM.yyyy")
-                    </option>
+                    @foreach (var date in Model.DateList.Where(date => date != Model.DateList.First()))
+                    {
+                        <option value="@date.ToString("yyyy-MM-dd")"
+                                selected="@(date == @Model.SelectedDate)">
+                            @date.ToString("dd.MM.yyyy")
+                        </option>
+                    }
+                }
+                else
+                {
+                    <option>No data available</option>
                 }
             </select>
-            <button type="submit" class="btn btn-secondary">Change first timestamp</button>
+            <button type="submit" class="btn btn-secondary" @(hasDates ? null : "disabled")>Change first timestamp
+            </button>
             <label class="ms-3 fs-2">- compared to last saved timestamp on
-                <b class="ms-1"> @Model.DateList.First()</b></label>
+                <b class="ms-1"> @(hasDates ? Model.DateList.First() : " No data available")</b></label>
 
         </div>
         <div class="input-group-sm mt-2">

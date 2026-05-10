@@ -23,7 +23,7 @@ public class TimestampNavServiceTests
         var navService = new TimestampNavService(dbContext, compareService);
 
         var exception = await Assert.ThrowsAsync<DataWithWrongValueException>(() =>
-            navService.FillTimestampNavViewModel(null));
+            navService.GetFirstDateList(CancellationToken.None));
 
         Assert.Equal("To compare must be two timestamps minimal.", exception.Message);
     }
@@ -48,7 +48,8 @@ public class TimestampNavServiceTests
         var compareService = new TimestampCompareService(dbContext);
         var navService = new TimestampNavService(dbContext, compareService);
 
-        var result = await navService.FillTimestampNavViewModel(null);
+        var result =
+            await navService.FillTimestampNavViewModel(null, await navService.GetFirstDateList(CancellationToken.None));
 
         Assert.Equal(middle, result.SelectedDate);
     }
@@ -71,7 +72,9 @@ public class TimestampNavServiceTests
         var compareService = new TimestampCompareService(dbContext);
         var navService = new TimestampNavService(dbContext, compareService);
 
-        var result = await navService.FillTimestampNavViewModel(firstDate);
+        var result =
+            await navService.FillTimestampNavViewModel(firstDate,
+                await navService.GetFirstDateList(CancellationToken.None));
 
         Assert.Equal(firstDate, result.SelectedDate);
     }
@@ -96,7 +99,8 @@ public class TimestampNavServiceTests
         var compareService = new TimestampCompareService(dbContext);
         var navService = new TimestampNavService(dbContext, compareService);
 
-        var result = await navService.FillTimestampNavViewModel(d1);
+        var result =
+            await navService.FillTimestampNavViewModel(d1, await navService.GetFirstDateList(CancellationToken.None));
 
         Assert.Equal([d3, d2, d1], result.DateList);
     }
@@ -128,7 +132,9 @@ public class TimestampNavServiceTests
         var compareService = new TimestampCompareService(dbContext);
         var navService = new TimestampNavService(dbContext, compareService);
 
-        var result = await navService.FillTimestampNavViewModel(firstDate);
+        var result =
+            await navService.FillTimestampNavViewModel(firstDate,
+                await navService.GetFirstDateList(CancellationToken.None));
 
         Assert.Equal(5, result.ComparedPositions.Count);
 
