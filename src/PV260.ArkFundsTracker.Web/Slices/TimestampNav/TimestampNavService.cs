@@ -9,18 +9,9 @@ public class TimestampNavService(
     TimestampCompareService timestampCompareService)
 {
     public async Task<TimestampNavViewModel> FillTimestampNavViewModel(DateOnly? firstDate,
+        List<DateOnly> dateList,
         CancellationToken ct = default)
     {
-        var dateList = await db.FundPositions.Select(x => x.Date)
-            .Distinct()
-            .OrderByDescending(x => x)
-            .ToListAsync(ct);
-
-        if (dateList.Count <= 1)
-        {
-            throw new DataWithWrongValueException("To compare must be two timestamps minimal.");
-        }
-
         var finalFirstDate = firstDate ?? dateList[1];
         var timestampCompareList = await timestampCompareService.FillComparedPositionsList(finalFirstDate, ct);
         var sortedTimestampCompareList = timestampCompareList
@@ -32,5 +23,17 @@ public class TimestampNavService(
             DateList = dateList,
             ComparedPositions = sortedTimestampCompareList
         };
+    }
+
+    public async Task<List<DateOnly>> GetFirstDateList(CancellationToken ct = default)
+    {
+        var dateList = await db.FundPositions.Select(x => x.Date)
+            .Distinct()
+            .OrderByDescending(x => x)
+            .ToListAsync(ct);
+
+        return dateList.Count <= 1
+            ? throw new DataWithWrongValueException("To compare must be two timestamps minimal.")
+            : dateList;
     }
 }

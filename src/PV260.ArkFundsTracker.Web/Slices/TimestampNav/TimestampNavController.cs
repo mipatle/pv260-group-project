@@ -7,24 +7,27 @@ public class TimestampNavController(TimestampNavService timestampNavService) : C
     [HttpGet]
     public async Task<IActionResult> Index(DateOnly? firstDate)
     {
+        var dateList = new List<DateOnly>();
         try
         {
-            var viewModel = await timestampNavService.FillTimestampNavViewModel(firstDate, HttpContext.RequestAborted);
+            dateList = await timestampNavService.GetFirstDateList(HttpContext.RequestAborted);
+            var viewModel =
+                await timestampNavService.FillTimestampNavViewModel(firstDate, dateList, HttpContext.RequestAborted);
             return View(viewModel);
         }
         catch (OperationCanceledException)
         {
-            return RedirectToAction(nameof(Index));
+            TempData["ErrorMessage"] = "Operation was canceled.";
         }
         catch (DataWithWrongValueException ex)
         {
-            TempData["ErrorMessage"] = "Fetched data has wrong values:" + ex.Message;
+            TempData["ErrorMessage"] = "Fetched data has wrong values: " + ex.Message;
         }
         catch (Exception ex)
         {
             TempData["ErrorMessage"] = "Unexpected exception happened: " + ex.Message;
         }
 
-        return RedirectToAction(nameof(Index));
+        return View(new TimestampNavViewModel { DateList = dateList });
     }
 }
