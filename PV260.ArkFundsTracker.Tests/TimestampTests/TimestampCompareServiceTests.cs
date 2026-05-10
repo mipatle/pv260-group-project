@@ -4,14 +4,16 @@ using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare;
 
-namespace PV260.ArkFundsTracker.Tests.TimestampNavTests;
+namespace PV260.ArkFundsTracker.Tests.TimestampTests;
 
 public class TimestampCompareServiceTests
 {
     [Fact]
     public async Task FillComparedPositionsList_WhenTickerExistsOnlyInLatestSnapshot_ReturnsNewState()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenTickerExistsOnlyInLatestSnapshot_ReturnsNewState));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenTickerExistsOnlyInLatestSnapshot_ReturnsNewState));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -25,7 +27,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var nvda = Assert.Single(result, x => x.LastPosition?.Ticker == "NVDA");
         Assert.Equal(TimestampComparePositionState.New, nvda.PositionState);
@@ -37,7 +39,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenTickerExistsOnlyInFirstSnapshot_ReturnsSoldState()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenTickerExistsOnlyInFirstSnapshot_ReturnsSoldState));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenTickerExistsOnlyInFirstSnapshot_ReturnsSoldState));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -51,7 +55,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var roku = Assert.Single(result, x => x.FirstPosition?.Ticker == "ROKU");
         Assert.Equal(TimestampComparePositionState.Sold, roku.PositionState);
@@ -63,7 +67,8 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenSharesAreEqual_ReturnsSameState()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenSharesAreEqual_ReturnsSameState));
+        await using var dbContext =
+            CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenSharesAreEqual_ReturnsSameState));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -76,7 +81,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(TimestampComparePositionState.Same, tsla.PositionState);
@@ -86,7 +91,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenSharesIncrease_ReturnsIncreasedStateAndCorrectPercentage()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenSharesIncrease_ReturnsIncreasedStateAndCorrectPercentage));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenSharesIncrease_ReturnsIncreasedStateAndCorrectPercentage));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -99,7 +106,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(TimestampComparePositionState.Increased, tsla.PositionState);
@@ -109,7 +116,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenSharesDecrease_ReturnsReducedStateAndCorrectPercentage()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenSharesDecrease_ReturnsReducedStateAndCorrectPercentage));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenSharesDecrease_ReturnsReducedStateAndCorrectPercentage));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -122,7 +131,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(TimestampComparePositionState.Reduced, tsla.PositionState);
@@ -132,7 +141,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenFirstSharesAreZero_ThrowsDataWithWrongValueException()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenFirstSharesAreZero_ThrowsDataWithWrongValueException));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenFirstSharesAreZero_ThrowsDataWithWrongValueException));
 
         var firstDate = new DateOnly(2026, 4, 20);
         var latestDate = new DateOnly(2026, 4, 21);
@@ -146,7 +157,7 @@ public class TimestampCompareServiceTests
         var service = new TimestampCompareService(dbContext);
 
         var exception = await Assert.ThrowsAsync<DataWithWrongValueException>(() =>
-            service.FillComparedPositionsList(firstDate));
+            service.FillComparedPositionsList(firstDate, CancellationToken.None));
 
         Assert.Equal("Shares of specific position can't be zero.", exception.Message);
     }
@@ -154,7 +165,9 @@ public class TimestampCompareServiceTests
     [Fact]
     public async Task FillComparedPositionsList_WhenMultipleSnapshotsExist_AlwaysComparesAgainstLatestDate()
     {
-        await using var dbContext = CreateInMemoryDbContext(nameof(FillComparedPositionsList_WhenMultipleSnapshotsExist_AlwaysComparesAgainstLatestDate));
+        await using var dbContext =
+            CreateInMemoryDbContext(
+                nameof(FillComparedPositionsList_WhenMultipleSnapshotsExist_AlwaysComparesAgainstLatestDate));
 
         var firstDate = new DateOnly(2026, 4, 19);
         var middleDate = new DateOnly(2026, 4, 20);
@@ -169,7 +182,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(50, tsla.SharesDifferencePercentage);
@@ -195,7 +208,7 @@ public class TimestampCompareServiceTests
 
         var service = new TimestampCompareService(dbContext);
 
-        var result = await service.FillComparedPositionsList(firstDate);
+        var result = await service.FillComparedPositionsList(firstDate, CancellationToken.None);
 
         var tsla = Assert.Single(result);
         Assert.Equal(20, tsla.SharesDifferencePercentage);

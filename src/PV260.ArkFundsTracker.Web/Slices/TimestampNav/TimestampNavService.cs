@@ -4,31 +4,16 @@ using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare;
 
 namespace PV260.ArkFundsTracker.Web.Slices.TimestampNav;
 
-public class TimestampNavService
+public class TimestampNavService(
+    AppDbContext db,
+    TimestampCompareService timestampCompareService)
 {
-    private readonly AppDbContext _db;
-    private readonly TimestampCompareService _timestampCompareService;
-
-    public TimestampNavService(AppDbContext db, TimestampCompareService timestampCompareService)
+    public async Task<TimestampNavViewModel> FillTimestampNavViewModel(DateOnly? firstDate,
+        List<DateOnly> dateList,
+        CancellationToken ct = default)
     {
-        _db = db;
-        _timestampCompareService = timestampCompareService;
-    }
-
-    public async Task<TimestampNavViewModel> FillTimestampNavViewModel(DateOnly? firstDate)
-    {
-        var dateList = await _db.FundPositions.Select(x => x.Date)
-            .Distinct()
-            .OrderByDescending(x => x)
-            .ToListAsync();
-
-        if (dateList.Count <= 1)
-        {
-            throw new DataWithWrongValueException("To compare must be two timestamps minimal.");
-        }
-
         var finalFirstDate = firstDate ?? dateList[1];
-        var timestampCompareList = await _timestampCompareService.FillComparedPositionsList(finalFirstDate);
+        var timestampCompareList = await timestampCompareService.FillComparedPositionsList(finalFirstDate, ct);
         var sortedTimestampCompareList = timestampCompareList
             .OrderBy(x => x.PositionState).ThenByDescending(y => Math.Abs(y.SharesDifferencePercentage)).ToList();
 
@@ -38,5 +23,17 @@ public class TimestampNavService
             DateList = dateList,
             ComparedPositions = sortedTimestampCompareList
         };
+    }
+
+    public async Task<List<DateOnly>> GetFirstDateList(CancellationToken ct = default)
+    {
+        var dateList = await db.FundPositions.Select(x => x.Date)
+            .Distinct()
+            .OrderByDescending(x => x)
+            .ToListAsync(ct);
+
+        return dateList.Count <= 1
+            ? throw new DataWithWrongValueException("To compare must be two timestamps minimal.")
+            : dateList;
     }
 }

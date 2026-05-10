@@ -1,0 +1,88 @@
+name: CD - Development
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
+  DOTNET_VERSION: '10.0.x'
+
+concurrency:
+  group: cd-development-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          global-json-file: global.json
+
+      - name: dotnet restore, build and publish
+        run: |
+          dotnet restore
+          dotnet build --configuration Release
+          dotnet publish src/PV260.ArkFundsTracker.Web/PV260.ArkFundsTracker.Web.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
+
+      - name: Pack publish output
+        run: |
+          cd ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp
+          zip -r ../app.zip .
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_DEV }}
+        continue-on-error: true
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME_DEV }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./app.zip
+
+      - name: Readiness check
+        shell: pwsh
+        env:
+          APP_NAME: ${{ secrets.AZURE_WEBAPP_NAME_DEV }}
+        run: |
+          $uri = "https://$env:APP_NAME.azurewebsites.net/health"
+          for ($attempt = 1; $attempt -le 20; $attempt++) {
+            try {
+              $response = Invoke-WebRequest -Uri $uri -UseBasicParsing -TimeoutSec 15
+              if ($response.StatusCode -eq 200) {
+                Write-Host "Development readiness check passed."
+                exit 0
+              }
+            } catch {
+              Write-Host "Attempt $attempt failed: $($_.Exception.Message)"
+            }
+
+            Start-Sleep -Seconds 10
+          }
+
+          throw "Development readiness check failed after deployment."
+
+

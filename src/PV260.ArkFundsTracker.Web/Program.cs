@@ -47,6 +47,8 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+    .AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>();
 
 var app = builder.Build();
 
@@ -75,6 +77,8 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
+app.MapHealthChecks("/health");
+
 app.UseAuthorization();
 
 app.MapStaticAssets();
