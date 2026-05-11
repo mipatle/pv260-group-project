@@ -5,41 +5,57 @@
 @{
     var hasDates = Model.DateList.Any();
 }
-<div class="mb-4 d-flex align-items-end">
-    <form asp-action="Index" method="get" class="d-inline ms-3">
-        <div class="input-group">
-            <select name="firstDate" class="form-select">
-                @if (hasDates)
-                {
-                    @foreach (var date in Model.DateList.Where(date => date != Model.DateList.First()))
-                    {
-                        <option value="@date.ToString("yyyy-MM-dd")"
-                                selected="@(date == @Model.SelectedDate)">
-                            @date.ToString("dd.MM.yyyy")
-                        </option>
-                    }
-                }
-                else
-                {
-                    <option>No data available</option>
-                }
-            </select>
-            <button type="submit" class="btn btn-secondary" @(hasDates ? null : "disabled")>Change first timestamp
-            </button>
-            <label class="ms-3 fs-2">- compared to last saved timestamp on
-                <b class="ms-1"> @(hasDates ? Model.DateList.First() : " No data available")</b></label>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Historical Comparison</h2>
+        <p class="text-muted">Analyze changes in holdings between two points in time.</p>
+    </div>
+    @if (hasDates)
+    {
+        <div class="badge bg-light text-dark border p-2">
+            <i class="bi bi-clock-history me-1"></i>
+            Comparing against: <strong>@Model.DateList.First().ToString("dd.MM.yyyy")</strong>
+        </div>
+    }
+</div>
 
-        </div>
-        <div class="input-group-sm mt-2">
-            <label>Decimal places for percentage: </label>
-            <select id="decimalSelect" class="form-select w-25">
-                <option value="0">0</option>
-                <option value="2" selected>2</option>
-                <option value="4">4</option>
-                <option value="6">6</option>
-            </select>
-        </div>
-    </form>
+<div class="card mb-5">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Base Timestamp</label>
+                <select name="firstDate" class="form-select shadow-none">
+                    @if (hasDates)
+                    {
+                        @foreach (var date in Model.DateList.Where(date => date != Model.DateList.First()))
+                        {
+                            <option value="@date.ToString("yyyy-MM-dd")" selected="@(date == Model.SelectedDate)">
+                                @date.ToString("dd.MM.yyyy")
+                            </option>
+                        }
+                    }
+                    else
+                    {
+                        <option>No data available</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Decimal Precision</label>
+                <select id="decimalSelect" class="form-select shadow-none">
+                    <option value="0">0 places</option>
+                    <option value="2" selected>2 places</option>
+                    <option value="4">4 places</option>
+                    <option value="6">6 places</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary px-4 w-100" @(hasDates ? "" : "disabled")>
+                    Update Comparison
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 @if (TempData["ErrorMessage"] != null)
 {
