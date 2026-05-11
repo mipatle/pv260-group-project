@@ -12,8 +12,6 @@ namespace PV260.ArkFundsTracker.Web.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP TABLE IF EXISTS app_users CASCADE;");
-
             migrationBuilder.CreateTable(
                 name: "app_users",
                 columns: table => new
