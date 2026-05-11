@@ -309,7 +309,7 @@ public class FundPositionsServiceTests
     private static FundPositionsService CreateService(
         AppDbContext dbContext,
         string csvResponse = "",
-        IFundPositionValidator? validator = null,
+        IValidator? validator = null,
         HttpMessageHandler? httpHandler = null)
     {
         var httpClient = httpHandler is null
@@ -392,7 +392,7 @@ public class FundPositionsServiceTests
             weightPercentage);
     }
 
-    private sealed class NoOpFundPositionValidator : IFundPositionValidator
+    private sealed class NoOpFundPositionValidator : IValidator
     {
         public void Validate(FundPosition position)
         {
@@ -403,7 +403,7 @@ public class FundPositionsServiceTests
         }
     }
 
-    private sealed class TrackingFundPositionValidator : IFundPositionValidator
+    private sealed class TrackingFundPositionValidator : IValidator
     {
         public int ValidateAllCallCount { get; private set; }
 
@@ -420,7 +420,7 @@ public class FundPositionsServiceTests
         }
     }
 
-    private sealed class ThrowingFundPositionValidator : IFundPositionValidator
+    private sealed class ThrowingFundPositionValidator : IValidator
     {
         public void Validate(FundPosition position)
         {
