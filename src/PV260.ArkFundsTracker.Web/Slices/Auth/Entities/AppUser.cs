@@ -10,5 +10,5 @@ public class AppUser
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-	public required string Role { get; set; }
+    public required string Role { get; set; }
 }
