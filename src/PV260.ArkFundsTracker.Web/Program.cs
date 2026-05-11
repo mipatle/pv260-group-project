@@ -26,7 +26,6 @@ if (builder.Environment.IsDevelopment())
 builder.Services
     .AddWebPresentation()
     .AddApplicationOptions(builder.Configuration)
-    .Configure<AdminUserOptions>(builder.Configuration.GetSection("AdminUser"))
     .AddScoped<FundPositionsService>()
     .AddScoped<IFundPositionValidator, FundPositionValidator>()
     .AddScoped<TimestampNavService>()
@@ -39,6 +38,15 @@ builder.Services
     .AddDbContextCheck<AppDbContext>();
 
 builder.Services.AddScoped<PasswordHasher<AppUser>>();
+
+builder.Services
+    .AddOptions<AdminUserOptions>()
+    .Bind(builder.Configuration.GetSection("AdminUser"))
+    .Validate(options =>
+            !string.IsNullOrWhiteSpace(options.Email) &&
+            !string.IsNullOrWhiteSpace(options.Password),
+        "AdminUser configuration is invalid. Email and Password must be provided.")
+    .ValidateOnStart();
 
 builder.Services
     .AddAuthentication(AuthenticationConstants.AuthenticationScheme)
