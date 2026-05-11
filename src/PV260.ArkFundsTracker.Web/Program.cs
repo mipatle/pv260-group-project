@@ -1,11 +1,16 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Infrastructure.DependencyInjection;
+using PV260.ArkFundsTracker.Web.Slices.Auth;
+using PV260.ArkFundsTracker.Web.Slices.Auth.Entities;
+using PV260.ArkFundsTracker.Web.Slices.Auth.Services;
 using PV260.ArkFundsTracker.Web.Slices.CronFetching;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition.Validators;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav;
 using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare;
+using PV260.ArkFundsTracker.Web.Infrastructure.Data.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 const string errorPath = "/home/error";
@@ -27,8 +32,27 @@ builder.Services
     .AddScoped<TimestampCompareService>()
     .AddHttpClient()
     .AddHostedService<CronJob>()
+    .AddScoped<AuthService>()
+    .AddScoped<AdminUserSeeder>()
     .AddHealthChecks()
     .AddDbContextCheck<AppDbContext>();
+
+builder.Services.AddScoped<PasswordHasher<AppUser>>();
+
+builder.Services
+    .AddOptions<AdminUserOptions>()
+    .Bind(builder.Configuration.GetSection("AdminUser"));
+
+builder.Services
+    .AddAuthentication(AuthenticationConstants.AuthenticationScheme)
+    .AddCookie(AuthenticationConstants.AuthenticationScheme, options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+        options.AccessDeniedPath = "/Auth/Login";
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -45,6 +69,9 @@ var app = builder.Build();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 
+    var seeder = scope.ServiceProvider.GetRequiredService<AdminUserSeeder>();
+    await seeder.SeedAsync();
+
     app.UseExceptionHandler(errorPath);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
@@ -53,6 +80,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
 app.MapHealthChecks("/health");
 
 app.UseAuthorization();
