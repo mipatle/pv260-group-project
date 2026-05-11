@@ -22,7 +22,7 @@ builder.Services
     .AddWebPresentation()
     .AddApplicationOptions(builder.Configuration)
     .AddScoped<FundPositionsService>()
-    .AddScoped<IFundPositionValidator, FundPositionValidator>()
+    .AddScoped<IValidator, FundPositionValidator>()
     .AddScoped<TimestampNavService>()
     .AddScoped<TimestampCompareService>()
     .AddHttpClient()

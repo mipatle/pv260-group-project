@@ -2,7 +2,7 @@
 
 namespace PV260.ArkFundsTracker.Web.Slices.FundPosition.Validators;
 
-public class FundPositionValidator : IFundPositionValidator
+public class FundPositionValidator : IValidator
 {
     public void Validate(FundPosition position)
     {
