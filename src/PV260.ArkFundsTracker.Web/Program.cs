@@ -41,12 +41,7 @@ builder.Services.AddScoped<PasswordHasher<AppUser>>();
 
 builder.Services
     .AddOptions<AdminUserOptions>()
-    .Bind(builder.Configuration.GetSection("AdminUser"))
-    .Validate(options =>
-            !string.IsNullOrWhiteSpace(options.Email) &&
-            !string.IsNullOrWhiteSpace(options.Password),
-        "AdminUser configuration is invalid. Email and Password must be provided.")
-    .ValidateOnStart();
+    .Bind(builder.Configuration.GetSection("AdminUser"));
 
 builder.Services
     .AddAuthentication(AuthenticationConstants.AuthenticationScheme)
