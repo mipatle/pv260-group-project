@@ -31,9 +31,9 @@ builder.Services
     .AddScoped<TimestampNavService>()
     .AddScoped<TimestampCompareService>()
     .AddHttpClient()
-    .AddHostedService<CronJob>()
     .AddScoped<AuthService>()
     .AddScoped<AdminUserSeeder>()
+    .AddHostedService<FundPositionUpdateWorker>()
     .AddHealthChecks()
     .AddDbContextCheck<AppDbContext>();
 

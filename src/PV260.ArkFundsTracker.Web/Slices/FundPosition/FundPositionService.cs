@@ -3,6 +3,8 @@ using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using PV260.ArkFundsTracker.Web.Infrastructure.Configuration;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Infrastructure.Logging;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition.Validators;
@@ -12,12 +14,10 @@ namespace PV260.ArkFundsTracker.Web.Slices.FundPosition;
 public class FundPositionsService(
     AppDbContext db,
     HttpClient http,
+    IOptions<ApplicationOptions> options,
     ILogger<FundPositionsService> logger,
     IValidator fundPositionValidator)
 {
-    private const string ArkUrl =
-        "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv";
-
     public async Task<List<FundPosition>> GetHistory(DateOnly date, CancellationToken ct = default)
     {
         return await db.FundPositions.Where(f => f.Date == date).ToListAsync(ct);
@@ -104,7 +104,7 @@ public class FundPositionsService(
 
         try
         {
-            csvData = await http.GetStringAsync(ArkUrl, ct);
+            csvData = await http.GetStringAsync(options.Value.ArkUrl, ct);
         }
         catch (HttpRequestException e)
         {

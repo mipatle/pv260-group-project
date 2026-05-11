@@ -2,6 +2,8 @@ using System.Net;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using PV260.ArkFundsTracker.Web.Infrastructure.Configuration;
 using PV260.ArkFundsTracker.Web.Infrastructure.Data;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition.Validators;
@@ -319,7 +321,15 @@ public class FundPositionsServiceTests
         var logger = NullLogger<FundPositionsService>.Instance;
         var fundPositionValidator = validator ?? new NoOpFundPositionValidator();
 
-        return new FundPositionsService(dbContext, httpClient, logger, fundPositionValidator);
+        var options = new ApplicationOptions
+        {
+            Name = "ARK Funds Tracker",
+            ArkUrl = "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv",
+            CronFetchExpression = "32 59 23 * * 7"
+        };
+
+        
+        return new FundPositionsService(dbContext, httpClient, Options.Create(options), logger, fundPositionValidator);
     }
 
     private static AppDbContext CreateInMemoryDbContext(string databaseName)
