@@ -23,18 +23,24 @@ public static partial class Log
     [LoggerMessage(
         EventId = 1004,
         Level = LogLevel.Information,
-        Message = "Starting the CronJob for date {Date} - fetching the data.")]
+        Message = "Starting the FundPositionUpdateWorker for date {Date} - fetching the data.")]
     public static partial void CronJobStart(ILogger logger, DateOnly date);
 
     [LoggerMessage(
         EventId = 1005,
         Level = LogLevel.Information,
-        Message = "CronJob for date {Date} finished successfully.")]
+        Message = "FundPositionUpdateWorker for date {Date} finished successfully.")]
     public static partial void CronJobFinished(ILogger logger, DateOnly date);
 
     [LoggerMessage(
         EventId = 1006,
         Level = LogLevel.Error,
-        Message = "CronJob for date {Date} failed. Reason: {ErrorMessage}")]
+        Message = "FundPositionUpdateWorker for date {Date} failed. Reason: {ErrorMessage}")]
     public static partial void CronJobFailed(ILogger logger, DateOnly date, string errorMessage = "");
+    
+    [LoggerMessage(
+        EventId = 1007,
+        Level = LogLevel.Information,
+        Message = "Rendering home page.")]
+    public static partial void RenderingHomePage(ILogger logger);
 }

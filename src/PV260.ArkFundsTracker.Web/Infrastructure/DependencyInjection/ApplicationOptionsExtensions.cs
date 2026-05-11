@@ -22,6 +22,10 @@ internal static class ApplicationOptionsExtensions
             .Bind(configuration.GetSection(ApplicationOptions.SectionName))
             .Validate(options => !string.IsNullOrWhiteSpace(options.Name),
                 $"{ApplicationOptions.SectionName}:{nameof(ApplicationOptions.Name)} must be configured.")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.CronFetchExpression),
+                $"{ApplicationOptions.SectionName}:{nameof(ApplicationOptions.CronFetchExpression)} must be configured.")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.ArkUrl),
+                $"{ApplicationOptions.SectionName}:{nameof(ApplicationOptions.ArkUrl)} must be configured.")
             .ValidateOnStart();
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(defaultConnection));

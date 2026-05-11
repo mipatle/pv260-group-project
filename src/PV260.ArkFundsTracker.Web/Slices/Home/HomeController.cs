@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PV260.ArkFundsTracker.Web.Infrastructure.Configuration;
+using PV260.ArkFundsTracker.Web.Infrastructure.Logging;
 using PV260.ArkFundsTracker.Web.Slices.Common;
 
 namespace PV260.ArkFundsTracker.Web.Slices.Home;
@@ -11,15 +12,9 @@ public sealed class HomeController(
     IOptions<ApplicationOptions> applicationOptions)
     : Controller
 {
-    private static readonly Action<ILogger, Exception?> LogRenderingHomePage =
-        LoggerMessage.Define(
-            LogLevel.Information,
-            new EventId(1000, nameof(LogRenderingHomePage)),
-            "Rendering home page.");
-
     public IActionResult Index()
     {
-        LogRenderingHomePage(logger, null);
+        Log.RenderingHomePage(logger);
 
         var viewModel = new HomePageViewModel
         {

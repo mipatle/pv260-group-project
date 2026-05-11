@@ -1,16 +1,17 @@
 using Cronos;
+using Microsoft.Extensions.Options;
+using PV260.ArkFundsTracker.Web.Infrastructure.Configuration;
 using PV260.ArkFundsTracker.Web.Infrastructure.Logging;
 using PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
 namespace PV260.ArkFundsTracker.Web.Slices.CronFetching;
 
-public class CronJob(IServiceProvider services, ILogger<CronJob> logger) : BackgroundService
+public class FundPositionUpdateWorker(IServiceProvider services, IOptions<ApplicationOptions> options, ILogger<FundPositionUpdateWorker> logger) : BackgroundService
 {
-    private const string Expression = "32 59 23 * * 7";
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var cron = CronExpression.Parse(Expression, CronFormat.IncludeSeconds);
+        var cron = CronExpression.Parse(options.Value.CronFetchExpression, CronFormat.IncludeSeconds);
 
         while (!stoppingToken.IsCancellationRequested)
         {
