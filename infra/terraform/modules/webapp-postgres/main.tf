@@ -106,7 +106,7 @@ resource "azurerm_linux_web_app" "this" {
     health_check_eviction_time_in_min = var.health_check_eviction_time_in_min
   }
 
-  app_settings = {
+  app_settings = merge({
     ASPNETCORE_ENVIRONMENT                = var.app_environment
     WEBSITE_HEALTHCHECK_PATH              = var.health_check_path
     WEBSITE_WEBDEPLOY_USE_SCM             = "true"
@@ -114,9 +114,11 @@ resource "azurerm_linux_web_app" "this" {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE   = "false"
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.this.connection_string
     ConnectionStrings__Default            = local.postgres_connection_string
+    Application__ArkUrl                   = var.ark_url
     AdminUser__Email                      = var.admin_user_email
     AdminUser__Password                   = var.admin_user_password
-  }
+  },
+  var.cron_fetch_expression != "" ? { "Application__CronFetchExpression" = var.cron_fetch_expression } : {})
 
   depends_on = [
     azurerm_postgresql_flexible_server_database.this,

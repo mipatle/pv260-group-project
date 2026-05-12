@@ -88,3 +88,14 @@ variable "admin_user_password" {
   type        = string
   sensitive   = true
 }
+
+variable "cron_fetch_expression" {
+  description = "CRON expression used by the application to schedule fetches (seconds optional). If empty, application default/appsettings will be used."
+  type        = string
+}
+
+variable "ark_url" {
+  description = "URL used by the application to fetch ARK funds CSV."
+  type        = string
+  default     = "https://assets.ark-funds.com/fund-documents/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv"
+}
