@@ -114,6 +114,8 @@ resource "azurerm_linux_web_app" "this" {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE   = "false"
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.this.connection_string
     ConnectionStrings__Default            = local.postgres_connection_string
+    AdminUser__Email                      = var.admin_user_email
+    AdminUser__Password                   = var.admin_user_password
   }
 
   depends_on = [

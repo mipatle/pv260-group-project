@@ -74,6 +74,14 @@ variable "postgres_zone" {
   default     = null
 }
 
+variable "admin_user_email" {
+  description = "Email for the default admin user."
+  type        = string
+  sensitive   = true
+}
 
-
-
+variable "admin_user_password" {
+  description = "Password for the default admin user."
+  type        = string
+  sensitive   = true
+}
