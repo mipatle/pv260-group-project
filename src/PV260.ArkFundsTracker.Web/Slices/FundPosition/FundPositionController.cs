@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PV260.ArkFundsTracker.Web.Slices.Auth;
 
 namespace PV260.ArkFundsTracker.Web.Slices.FundPosition;
 
@@ -21,11 +23,12 @@ public class FundPositionController(FundPositionsService service) : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = AuthenticationConstants.RoleAdmin)]
     public async Task<IActionResult> Refresh()
     {
         try
         {
-            await service.FetchAndSaveLatest(ct: HttpContext.RequestAborted);
+            await service.FetchAndSaveLatest(User.GetUserId(), HttpContext.RequestAborted);
             TempData["IsFetched"] = true;
         }
         catch (OperationCanceledException)
