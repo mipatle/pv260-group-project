@@ -17,7 +17,7 @@ public class AuthServiceTests(SqliteDbFixture db)
 
         var factory = new AuthTestFactory(db);
         var service = factory.CreateService();
-        
+
         var email = $"{Guid.NewGuid()}@example.com";
 
         var model = new RegisterViewModel
@@ -114,7 +114,7 @@ public class AuthServiceTests(SqliteDbFixture db)
 
         var factory = new AuthTestFactory(db);
         var service = factory.CreateService();
-        
+
         var email = $"{Guid.NewGuid()}@example.com";
 
         var model = new LoginViewModel
@@ -131,9 +131,9 @@ public class AuthServiceTests(SqliteDbFixture db)
     private async Task<AppUser> CreateAppUser(string role, string password)
     {
         await db.ResetAsync();
-        
+
         var email = $"{Guid.NewGuid()}@example.com";
-        
+
         var passwordHasher = new PasswordHasher<AppUser>();
 
         var user = new AppUser
@@ -145,7 +145,7 @@ public class AuthServiceTests(SqliteDbFixture db)
 
         user.PasswordHash =
             passwordHasher.HashPassword(user, password);
-        
+
         return user;
     }
 }
