@@ -34,5 +34,9 @@ public class SqliteDbFixture : IAsyncLifetime
         await Context.FundPositions
             .IgnoreQueryFilters()
             .ExecuteDeleteAsync();
+
+        await Context.Users
+            .IgnoreQueryFilters()
+            .ExecuteDeleteAsync();
     }
 }
