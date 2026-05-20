@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0132EF06
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PV260.ArkFundsTracker.Tests", "PV260.ArkFundsTracker.Tests\PV260.ArkFundsTracker.Tests.csproj", "{9DD39A79-8F98-4F49-A2DD-EEF8125A3EF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PV260.ArkFundsTracker.E2ETests", "PV260.ArkFundsTracker.E2ETests\PV260.ArkFundsTracker.E2ETests.csproj", "{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,18 @@ Global
 		{9DD39A79-8F98-4F49-A2DD-EEF8125A3EF0}.Release|x64.Build.0 = Release|Any CPU
 		{9DD39A79-8F98-4F49-A2DD-EEF8125A3EF0}.Release|x86.ActiveCfg = Release|Any CPU
 		{9DD39A79-8F98-4F49-A2DD-EEF8125A3EF0}.Release|x86.Build.0 = Release|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Debug|x64.Build.0 = Debug|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Debug|x86.Build.0 = Debug|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Release|x64.ActiveCfg = Release|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Release|x64.Build.0 = Release|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Release|x86.ActiveCfg = Release|Any CPU
+		{D677C59F-EEC2-4F2B-93BE-2FA08DEEF051}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
