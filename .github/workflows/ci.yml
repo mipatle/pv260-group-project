@@ -51,9 +51,7 @@ jobs:
         run: dotnet test PV260.ArkFundsTracker.Tests --configuration Release --no-build --no-restore
               
       - name: Install Playwright Browsers
-        run: |
-          dotnet tool restore
-          dotnet tool run playwright install --with-deps
+        run: sh PV260.ArkFundsTracker.E2ETests/bin/Release/net8.0/playwright.sh install --with-deps
 
       - name: Run e2e tests
         run: |
