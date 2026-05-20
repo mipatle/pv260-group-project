@@ -51,8 +51,9 @@ jobs:
         run: dotnet test PV260.ArkFundsTracker.Tests --configuration Release --no-build --no-restore
 
       - name: Install Playwright Browsers
+        working-directory: ./PV260.ArkFundsTracker.E2ETests
         run: |
-          dotnet tool restore --tool-manifest ./PV260.ArkFundsTracker.E2ETests/.config/dotnet-tools.json
+          dotnet tool restore
           dotnet tool run playwright install --with-deps
 
       - name: Run e2e tests
