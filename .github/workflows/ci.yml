@@ -58,7 +58,12 @@ jobs:
 
       - name: Run e2e tests
         run: |
-          docker compose up -d --build
+          if ! docker compose up -d --build; then
+            echo "--- DOCKER COMPOSE FAILED TO START ---"
+            echo "--- PRINTING CONTAINER LOGS FOR DEBUGGING ---"
+            docker compose logs
+            exit 1
+          fi
           E2E_BASE_URL="http://localhost:8080" dotnet test PV260.ArkFundsTracker.E2ETests --configuration Release
           docker compose down
 
