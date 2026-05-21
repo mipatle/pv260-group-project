@@ -5,11 +5,12 @@ using System.Net.Http.Headers;
 public class GitHubClient
 {
     private readonly HttpClient _client;
-    private readonly string _repo;
+
+    public string Repo { get; }
 
     public GitHubClient()
     {
-        _repo = Environment.GetEnvironmentVariable("GITHUB_REPO") ?? "";
+        Repo = Environment.GetEnvironmentVariable("GITHUB_REPO") ?? "";
         var token = Environment.GetEnvironmentVariable("GITHUB_PAT") ?? "";
 
         _client = new HttpClient();
@@ -27,11 +28,6 @@ public class GitHubClient
         var response = await _client.GetAsync(url);
         var body = await response.Content.ReadAsStringAsync();
 
-        if (!response.IsSuccessStatusCode)
-            return $"GitHub API error: {(int)response.StatusCode} - {body}";
-
-        return body;
+        return !response.IsSuccessStatusCode ? $"GitHub API error: {(int)response.StatusCode} - {body}" : body;
     }
-
-    public string Repo => _repo;
 }
