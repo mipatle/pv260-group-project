@@ -324,7 +324,7 @@ repository through custom tools.
 - Listing recent GitHub issues
 - Reading repository information
 - Listing open pull request
-- Compare actual code with a specific commit
+- Show a commit diff
 
 ### Configure Claude Desktop
 Open Claude Desktop config:
@@ -344,7 +344,7 @@ and add the MCP server configuration:
       "args": [
         "run",
         "--project",
-        "C:\\path\\to\\your\\mcp\project"
+        "C:\\path\\to\\your\\mcp\\project"
       ],
       "env": {
         "GITHUB_PAT": "github_pat",
