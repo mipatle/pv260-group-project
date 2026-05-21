@@ -28,6 +28,9 @@ namespace PV260.ArkFundsTracker.E2ETests
             await Expect(Page).ToHaveURLAsync($"{_baseUrl}/");
             await Expect(Page.GetByText("View Holdings")).ToBeVisibleAsync();
             
+            var adminSpan = Page.Locator("nav span", new() { HasText = "admin@example.com" });
+            await Expect(adminSpan).ToBeVisibleAsync();
+            
             // 2. --- INGEST FLOW ---
             await Page.GetByRole(AriaRole.Link, new() { Name = "View Holdings" }).ClickAsync();
             await Expect(Page).ToHaveURLAsync($"{_baseUrl}/FundPosition");
@@ -49,7 +52,16 @@ namespace PV260.ArkFundsTracker.E2ETests
             Assert.That(_seededDates, Does.Not.Contain(actualDate));
             
             var comparisonTable = Page.GetByRole(AriaRole.Table);
-            await Expect(table).ToBeVisibleAsync();
+            await Expect(comparisonTable).ToBeVisibleAsync();
+            
+            // 4. --- LOGOUT FLOW ---
+            await Page.GetByRole(AriaRole.Button, new() { Name = "Logout" }).ClickAsync();
+
+            adminSpan = Page.Locator("nav span", new() { HasText = "admin@example.com" });
+            await Expect(adminSpan).Not.ToBeVisibleAsync();
+
+            var loginLink = Page.GetByRole(AriaRole.Link, new() { Name = "Login" });
+            await Expect(loginLink).ToBeVisibleAsync();
         }
     }
 }
