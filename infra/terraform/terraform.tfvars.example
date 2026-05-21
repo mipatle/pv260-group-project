@@ -6,8 +6,6 @@ common_tags = {
   managed_by = "terraform"
 }
 
-
-
-
-
-
+admin_user_email    = "admin@example.com"
+admin_user_password = "YourSecurePassword123!"
+cron_fetch_expression = "32 59 23 * * 7"

@@ -24,6 +24,10 @@ module "deployment" {
   postgres_storage_mb            = var.postgres_storage_mb
   postgres_backup_retention_days = var.postgres_backup_retention_days
   postgres_zone                  = var.postgres_zone
+  admin_user_email               = var.admin_user_email
+  admin_user_password            = var.admin_user_password
+  cron_fetch_expression          = var.cron_fetch_expression
+  ark_url                        = var.ark_url
 }
 
 

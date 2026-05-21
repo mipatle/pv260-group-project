@@ -161,7 +161,7 @@ An admin user is seeded on startup **only if** the `AdminUser` configuration sec
 For local development, configure the admin user using user secrets:
 
     dotnet user-secrets set "AdminUser:Email" "admin@example.com" --project src/PV260.ArkFundsTracker.Web
-    dotnet user-secrets set "AdminUser:Password" "Admin123" --project src/PV260.ArkFundsTracker.Web
+    dotnet user-secrets set "AdminUser:Password" "YourSecurePassword123!" --project src/PV260.ArkFundsTracker.Web
 
 After starting the application, the admin user will be created automatically if it does not already exist.
 
