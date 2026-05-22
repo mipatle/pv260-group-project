@@ -315,3 +315,46 @@ Project includes automated tests for ingestion and audit logic.
 ### Running Tests
 
     dotnet test
+
+## MCP Integration
+This project includes an MCP server that allows Claude Desktop to interact with the GitHub
+repository through custom tools.
+
+### Features
+- Listing recent GitHub issues
+- Reading repository information
+- Listing open pull request
+- Show a commit diff
+
+### Configure Claude Desktop
+Open Claude Desktop config:
+
+#### Windows
+```
+%APPDATA%\Claude\claude_desktop_config.json
+```
+
+and add the MCP server configuration:
+
+```json
+{
+  "mcpServers": {
+    "github-mcp": {
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "C:\\path\\to\\your\\mcp\\project"
+      ],
+      "env": {
+        "GITHUB_PAT": "github_pat",
+        "GITHUB_REPO": "owner/repository"
+      }
+    }
+  }
+}
+```
+
+### GitHub Token
+You can create a GitHub PAT here:
+https://github.com/settings/tokens
