@@ -29,7 +29,7 @@ public class GitTools
 
             return process.ExitCode != 0 ? $"Git command failed with exit code {process.ExitCode}." : output;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return $"Error executing git show {commitId}.";
         }
