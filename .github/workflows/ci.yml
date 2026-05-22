@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - milestone-[0-9]*
+    paths-ignore:
+      - doc/**
+      - README.md
+      - .gitignore
+      - .git/**
+  push:
+    branches:
+      - main
+      - 'milestone-*'
+    paths-ignore:
+      - doc/**
+      - README.md
+      - .gitignore
+      - .git/**
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore dependencies
+        run: dotnet restore PV260.ArkFundsTracker.sln
+
+      - name: Build solution
+        run: dotnet build PV260.ArkFundsTracker.sln --configuration Release --no-restore
+
+      - name: Run unit tests
+        run: dotnet test PV260.ArkFundsTracker.Tests --configuration Release --no-build --no-restore
+
+      - name: Install Playwright Browsers
+        working-directory: ./PV260.ArkFundsTracker.E2ETests
+        run: |
+          dotnet tool restore
+          dotnet tool run playwright install --with-deps
+
+      - name: Run e2e tests
+        run: |
+          if ! docker compose up -d --build; then
+            echo "--- DOCKER COMPOSE FAILED TO START ---"
+            echo "--- PRINTING CONTAINER LOGS FOR DEBUGGING ---"
+            docker compose logs
+            exit 1
+          fi
+          E2E_BASE_URL="http://localhost:8080" dotnet test PV260.ArkFundsTracker.E2ETests --configuration Release
+          docker compose down
+
+  deploy-development:
+    needs: build-and-test
+    uses: ./.github/workflows/dev-cd.yml
+    secrets: inherit
+
+  deploy-production:
+    needs: [build-and-test, deploy-development]
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/milestone-') || github.event_name == 'pull_request'
+    uses: ./.github/workflows/prod-cd.yml
+    secrets: inherit

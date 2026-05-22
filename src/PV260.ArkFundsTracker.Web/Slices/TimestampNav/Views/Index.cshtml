@@ -1,0 +1,190 @@
+﻿@using System.Globalization
+@using PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampCompare
+@model PV260.ArkFundsTracker.Web.Slices.TimestampNav.TimestampNavViewModel
+
+@{
+    var hasDates = Model.DateList.Any();
+}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Historical Comparison</h2>
+        <p class="text-muted">Analyze changes in holdings between two points in time.</p>
+    </div>
+    @if (hasDates)
+    {
+        <div class="badge bg-light text-dark border p-2">
+            <i class="bi bi-clock-history me-1"></i>
+            Comparing against: <strong>@Model.DateList.First().ToString("dd.MM.yyyy")</strong>
+        </div>
+    }
+</div>
+
+<div class="card mb-5">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Base Timestamp</label>
+                <select name="firstDate" class="form-select shadow-none">
+                    @if (hasDates)
+                    {
+                        @foreach (var date in Model.DateList.Where(date => date != Model.DateList.First()))
+                        {
+                            <option value="@date.ToString("yyyy-MM-dd")" selected="@(date == Model.SelectedDate)">
+                                @date.ToString("dd.MM.yyyy")
+                            </option>
+                        }
+                    }
+                    else
+                    {
+                        <option>No data available</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">Decimal Precision</label>
+                <select id="decimalSelect" class="form-select shadow-none">
+                    <option value="0">0 places</option>
+                    <option value="2" selected>2 places</option>
+                    <option value="4">4 places</option>
+                    <option value="6">6 places</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary px-4 w-100" @(hasDates ? "" : "disabled")>
+                    Update Comparison
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+            <use xlink:href="#exclamation-triangle-fill"/>
+        </svg>
+        <div>
+            @TempData["ErrorMessage"]
+        </div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+else if (!Model.ComparedPositions.Any())
+{
+    <div class="alert alert-warning">No funds found for this date.</div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead class="table-secondary">
+        <tr class="border-start-1">
+            <th colspan="4">Old positions</th>
+            <th colspan="4">Last positions
+            <th rowspan="2">Percentage</th>
+            <th rowspan="2">Situation</th>
+        </tr>
+        <tr>
+            <th>Ticker</th>
+            <th>Company</th>
+            <th class="text-end">Shares</th>
+            <th class="text-end">Weight</th>
+
+            <th>Ticker</th>
+            <th>Company</th>
+            <th class="text-end">Shares</th>
+            <th class="text-end">Weight</th>
+        </tr>
+        </thead>
+        <tbody class="table-bordered table-light">
+        @foreach (var pos in Model.ComparedPositions)
+        {
+            var color = "bg-opacity-25 " + pos.PositionState switch
+            {
+                TimestampComparePositionState.Sold => "bg-danger",
+                TimestampComparePositionState.Reduced => "bg-danger",
+                TimestampComparePositionState.Increased => "bg-success",
+                TimestampComparePositionState.New => "bg-primary",
+                _ => "bg-muted"
+            };
+
+            var decimalPlaces = 2;
+            var cookie = Context.Request.Cookies["decimalPlaces"];
+            if (int.TryParse(cookie, out var val))
+            {
+                decimalPlaces = val;
+            }
+
+            <tr>
+                <td class="@color"><strong>@pos.FirstPosition?.Ticker</strong></td>
+                <td class="@color">@pos.FirstPosition?.Company</td>
+                <td class="text-end @color">@pos.FirstPosition?.Shares.ToString("F0")</td>
+                <td class="text-end @color">
+                    @(pos.FirstPosition?.WeightPercentage == null
+                        ? ""
+                        : pos.FirstPosition.WeightPercentage.ToString("F2") + "%")
+                </td>
+                <td class="@color"><strong>@pos.LastPosition?.Ticker</strong></td>
+                <td class="@color">@pos.LastPosition?.Company</td>
+                <td class="text-end @color">@pos.LastPosition?.Shares.ToString("F0")</td>
+                <td class="text-end @color">
+                    @(pos.LastPosition?.WeightPercentage == null
+                        ? ""
+                        : pos.LastPosition.WeightPercentage.ToString("F2") + "%")
+                </td>
+                <td class="text-end fw-bold @color 
+                    @(pos.SharesDifferencePercentage <= 0 || pos.PositionState == TimestampComparePositionState.Sold
+                                                                          ? "text-danger"
+                                                                          : "text-success")">
+                    @if (pos.SharesDifferencePercentage == 0)
+                    {
+                        @("")
+                    }
+                    else if (pos.PositionState == TimestampComparePositionState.Sold)
+                    {
+                        @(pos.SharesDifferencePercentage.ToString("F0") + "%")
+                    }
+                    else
+                    {
+                        @(pos.SharesDifferencePercentage.ToString("F" + @decimalPlaces) + "%")
+                    }
+                </td>
+                <td class="text-end fw-bolder @color
+                    @(pos.PositionState switch
+                                                                        {
+                                                                            TimestampComparePositionState.Sold => "text-danger",
+                                                                            TimestampComparePositionState.Reduced => "text-danger",
+                                                                            TimestampComparePositionState.Increased => "text-success",
+                                                                            TimestampComparePositionState.New => "text-primary",
+                                                                            _ => "text-muted"
+                                                                        })">
+                    @(pos.PositionState == TimestampComparePositionState.Sold ? TimestampComparePositionState.Reduced : pos.PositionState)
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<script>
+    const key = "decimalPlaces";
+    const select = document.getElementById("decimalSelect");
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            return parts.pop().split(';').shift();
+        }
+        return null;
+    }
+
+    const saved = getCookie(key);
+    if (saved !== null) {
+        select.value = saved;
+    }
+
+    select.addEventListener("change", () => {
+        document.cookie = "decimalPlaces=" + select.value + "; path=/; max-age=6000";
+        location.reload();
+    });
+</script>
